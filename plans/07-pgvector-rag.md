@@ -1,14 +1,21 @@
-# Plan 7 — Base de conocimiento con pgvector ⚠️ DEPRECADO
+# Plan 7 — Base de conocimiento con pgvector ⚠️ DEPRECADO (julio 2026)
 
-> **Estado:** DEPRECADO (julio 2026). Reemplazado por [Plan 9](09-rag-replacement-static-knowledge.md).
+> **Estado:** DEPRECADO. Reemplazado por [Plan 9](09-rag-replacement-static-knowledge.md) (IMPLEMENTADO ✅).
 >
 > **Motivo:** No existen documentos técnicos, CVs ni presupuestos para indexar.
 > El único contenido disponible es el sitio web https://genia.coop, cuyo volumen
 > (~10-20 páginas) no justifica una pipeline de RAG con pgvector.
 >
+> **Qué se implementó en su lugar (Plan 9):**
+> - Archivos `.md` estáticos en `data/knowledge/` con contenido de genia.coop
+> - `src/knowledge/loader.py` con `KnowledgeBase` — keyword search en memoria
+> - El conocimiento se incluye inline en el system prompt (~15KB, ~3,800 tokens)
+> - `buscar_documentos` usa `KnowledgeBase.search()` en vez de pgvector
+> - `buscar_cv` es un stub honesto (no hay CVs indexados)
+>
 > **Futuro:** Este diseño se reactivará si GenIA genera documentos reales (propuestas,
 > documentación técnica, CVs, papers) en volumen suficiente para justificar búsqueda
-> semántica vectorial. La arquitectura sigue siendo válida.
+> semántica vectorial (50+ documentos o 500KB+ de texto). La arquitectura sigue siendo válida.
 
 **Fecha:** 2026-07-21
 **Depende de:** Plan 2 (persistencia — la tabla `documentos` ya existe)

@@ -11,12 +11,15 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pydantic-settings>=2.0.0 \
     python-dotenv>=1.0.0 \
     httpx>=0.27.0 \
+    beautifulsoup4>=4.12.0 \
+    lxml>=5.0.0 \
     "sqlalchemy[asyncio]>=2.0.0" \
     asyncpg>=0.30.0 \
     psycopg2-binary>=2.9.0 \
     "alembic>=1.13.0"
 
 COPY src/ ./src/
+COPY data/ ./data/
 
 ENV PYTHONPATH=/app
 EXPOSE 8000

@@ -70,8 +70,8 @@ Actualiza los campos del lead en DB. Se llama incrementalmente (nombre primero, 
 ### `contador_preguntas()`
 Devuelve cuántas preguntas de diagnóstico se hicieron ya y cuántas quedan. El agente usa esto para decidir si sigue preguntando o va cerrando.
 
-### `buscar_documentos(query, tipo?)`
-Busca en la base de conocimiento estática de GenIA (archivos .md con info de genia.coop — ver Plan 9). El agente la usa si el lead menciona una tecnología o pregunta por capacidad técnica.
+### `buscar_documentos(query)`
+Busca en la base de conocimiento estática de GenIA (archivos .md con info de genia.coop — Plan 9 implementado). El conocimiento también está inline en el system prompt (~15KB), por lo que el agente responde sin tool calls la mayoría de las veces. `buscar_documentos` es un respaldo para búsquedas precisas con keyword scoring.
 
 ### `buscar_cv(tecnologia)`
 Stub informativo. GenIA no mantiene una base de CVs indexados. Si el lead pregunta "¿tienen a alguien que sepa X?", el agente deriva al equipo comercial.
@@ -115,4 +115,4 @@ El loop actual en `conversation.py` usa `get_llm_response()` que solo devuelve t
 3. `contador_preguntas()` funciona y el agente ajusta su comportamiento
 4. Al llegar al límite → resumen estructurado automático
 5. El lead queda en estado `completado` con `resumen_diagnostico` poblado
-6. Si el lead menciona una tecnología → el agente busca en la base de conocimiento (archivos .md, Plan 9)
+6. Si el lead menciona una tecnología → el agente responde desde el system prompt (conocimiento inline) y puede usar `buscar_documentos` como respaldo (archivos .md, Plan 9 implementado)

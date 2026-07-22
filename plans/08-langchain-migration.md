@@ -24,8 +24,8 @@ Reemplazar el loop manual de tool calling + streaming artesanal (`conversation.p
 | Cliente LLM | `openai.AsyncOpenAI` | `langchain_openai.ChatOpenAI` → AI gateway |
 | Streaming | Loop manual con deltas | `.astream_events(version="v2")` |
 | Prompts | `SYSTEM_PROMPT` con docs de tools inline | `SystemMessage` + schemas auto-generados |
-| Conocimiento GenIA (Plan 9) | .md estáticos + keyword search | Igual (no usa LangChain) |
-| RAG (suspendido, Plan 7) | pgvector + chunker propio | `langchain-text-splitters` + `langchain-postgres` |
+| Conocimiento GenIA (Plan 9 ✅) | .md estáticos + keyword search inline en system prompt | Igual (no usa LangChain) |
+| RAG (suspendido, Plan 7) | pgvector + chunker propio (no implementado) | `langchain-text-splitters` + `langchain-postgres` (futuro, si aparecen docs reales) |
 
 **Lo que NO cambia:** DB (`SQLAlchemy` + `asyncpg`), Chainlit UI, notificaciones, Celery, config base.
 
@@ -412,11 +412,11 @@ LLM_TEMPERATURE=0.7
 
 ### Fase 8B — Chunking con `langchain-text-splitters` (suspendido)
 
-~~Reemplazar chunker propio (`src/rag/chunker.py`) por `RecursiveCharacterTextSplitter`, `MarkdownHeaderTextSplitter` y `SemanticChunker` de `langchain-text-splitters`.~~ **Suspendido junto con Plan 7.** No hay documentos para chunkear.
+~~Reemplazar chunker propio (`src/rag/chunker.py`) por `RecursiveCharacterTextSplitter`, `MarkdownHeaderTextSplitter` y `SemanticChunker` de `langchain-text-splitters`.~~ **Suspendido junto con Plan 7.** No hay documentos para chunkear. El conocimiento se maneja con archivos `.md` estáticos (Plan 9, implementado ✅).
 
 ### Fase 8C — Ingesta con loaders de `langchain-community` (suspendido)
 
-~~Reemplazar parseo manual de PDF/MD/TXT/web en los scripts de ingesta por `PyPDFLoader`, `UnstructuredMarkdownLoader`, `TextLoader`, `AsyncHtmlLoader`.~~ **Suspendido junto con Plan 7.** El conocimiento ahora es estático (archivos .md, Plan 9).
+~~Reemplazar parseo manual de PDF/MD/TXT/web en los scripts de ingesta por `PyPDFLoader`, `UnstructuredMarkdownLoader`, `TextLoader`, `AsyncHtmlLoader`.~~ **Suspendido junto con Plan 7.** El conocimiento se maneja con archivos `.md` estáticos (Plan 9, implementado ✅).
 
 ### Fase 8D — Human-in-the-loop
 

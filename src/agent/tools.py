@@ -14,9 +14,9 @@ from src.db.queries import (
     count_questions,
     get_lead_interactions,
     close_lead,
-    get_active_documents,
 )
 from src.db.models import Lead, LeadStatus, MessageRole
+from src.knowledge.loader import knowledge_base
 
 MAX_DIAGNOSTIC_QUESTIONS = 12
 
@@ -105,74 +105,58 @@ async def contador_preguntas(config: RunnableConfig = None) -> str:
 @tool
 async def buscar_documentos(
     query: str,
-    tipo: str = "",
     config: RunnableConfig = None,
 ) -> str:
-    """Busca documentos relevantes en la base de conocimiento de GenIA: propuestas
-    comerciales, presupuestos, casos de éxito, documentos técnicos.
+    """Busca información sobre GenIA en la base de conocimiento: servicios,
+    productos, casos de éxito, industrias, tecnologías y metodología de trabajo.
 
-    Usala cuando el lead menciona una tecnología específica, un caso de uso, o
-    pregunta si GenIA tiene experiencia en algo. También si querés respaldar una
-    recomendación con un caso real.
+    Usala cuando el lead pregunta sobre las capacidades de GenIA, experiencia en
+    una industria, casos de éxito, stack tecnológico, o métodos de trabajo. También
+    si necesitás respaldar una recomendación con información precisa sobre GenIA.
 
     Args:
-        query: Texto de búsqueda, ej. 'machine learning en logística' o 'automatización de procesos'.
-        tipo: Tipo de documento a buscar. Opciones: propuesta, cv, presupuesto, otro. Opcional.
+        query: Texto de búsqueda, ej. 'experiencia en sector público' o 'stack open source'.
     """
-    db, _ = _get_context(config)
+    if not query or not query.strip():
+        return "Query vacía. Especificá qué información de GenIA necesitás buscar."
 
-    tipo_filtro = tipo if tipo and tipo.strip() else None
-    documentos = await get_active_documents(db, tipo=tipo_filtro)
+    results = knowledge_base.search(query.strip(), top_k=3)
 
-    query_lower = query.lower()
-    matches = [
-        f"- {doc.nombre} (tipo: {doc.tipo.value if doc.tipo else 'otro'})"
-        for doc in documentos
-        if query_lower in doc.nombre.lower()
-    ]
-
-    if not matches:
+    if not results:
         return (
-            f"No se encontraron documentos para '{query}'"
-            + (f" de tipo '{tipo}'" if tipo else "")
-            + ". Búsqueda preliminar (Qdrant pendiente de integración)."
+            f"No se encontró información sobre '{query}' en la base de conocimiento "
+            f"de GenIA. Respondé con honestidad: si no tenés datos sobre ese tema, "
+            f"no inventes. Ofrecé derivar la consulta al equipo comercial."
         )
 
-    return (
-        f"Resultados para '{query}'"
-        + (f" (tipo: {tipo})" if tipo else "")
-        + f" — {len(matches)} encontrados:\n"
-        + "\n".join(matches[:5])
-    )
+    lines = [f"Resultados para '{query}' — {len(results)} encontrados:"]
+    for r in results:
+        lines.append(f"\n### {r['title']} (relevancia: {r['score']})")
+        lines.append(f"{r['snippet']}")
+
+    return "\n".join(lines)
 
 
 @tool
 async def buscar_cv(tecnologia: str, config: RunnableConfig = None) -> str:
-    """Busca perfiles profesionales (CVs) en la base de GenIA que tengan experiencia
-    en una tecnología o área específica.
+    """Busca perfiles profesionales (CVs) en la base de GenIA con experiencia en
+    una tecnología o área específica.
 
-    Usala cuando el lead pregunta '¿tienen a alguien que sepa X?' o '¿conocen gente
-    con experiencia en Y?'. Responde con un resumen de los perfiles encontrados.
+    IMPORTANTE: GenIA actualmente no mantiene una base de CVs indexados. Esta tool
+    devuelve un mensaje informativo para que puedas responder al lead con honestidad.
+    Si el lead pregunta por perfiles específicos, derivá la consulta al equipo
+    comercial para que evalúen disponibilidad de recursos.
 
     Args:
         tecnologia: Tecnología o skill a buscar, ej. 'Python', 'Computer Vision', 'RAG'.
     """
-    db, _ = _get_context(config)
-
-    documentos = await get_active_documents(db, tipo="cv")
-    query_lower = tecnologia.lower()
-    matches = [
-        f"- {doc.nombre}"
-        for doc in documentos
-        if query_lower in doc.nombre.lower()
-    ]
-
-    if not matches:
-        return f"No se encontraron CVs con experiencia en '{tecnologia}'."
-
     return (
-        f"CVs encontrados para '{tecnologia}' — {len(matches)} resultados:\n"
-        + "\n".join(matches[:5])
+        f"GenIA no mantiene una base de CVs indexados. No hay perfiles disponibles "
+        f"para '{tecnologia}'.\n\n"
+        f"Si el lead pregunta por perfiles o experiencia en tecnologías específicas, "
+        f"respondé con honestidad: 'Actualmente no tenemos una base de CVs públicos, "
+        f"pero si te interesa podemos conversar con el equipo comercial para evaluar "
+        f"la disponibilidad de recursos con experiencia en {tecnologia}.'"
     )
 
 

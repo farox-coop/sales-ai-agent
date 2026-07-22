@@ -9,6 +9,17 @@ GREETING = (
     "Contame un poco sobre vos y tu empresa, así entiendo mejor cómo puedo ayudarte."
 )
 
+# Mapeo de tool_name interno → texto amigable para mostrar en el chat.
+# Las tools que no están en este diccionario no muestran mensaje (son internas).
+# Si el valor es None o string vacío, tampoco se muestra nada.
+TOOL_DISPLAY_TEXT: dict[str, str | None] = {
+    "registrar_lead": "Tomando nota...",
+    "buscar_documentos": "Buscando información...",
+    "buscar_cv": "Buscando perfiles...",
+    "generar_resumen": "Preparando tu diagnóstico...",
+    # contador_preguntas es puramente interno, no se muestra.
+}
+
 # 5G — Fast-path: respuestas predefinidas para mensajes triviales.
 # Evita una llamada completa al LLM (~3.5s) para respuestas predecibles.
 # IMPORTANTE: solo se aplica cuando la conversación no arrancó realmente
@@ -88,8 +99,10 @@ async def on_message(message: cl.Message):
         """Callback: notifica inicio/fin de ejecución de tools."""
         nonlocal tool_placeholder_sent
         if event_type == "start" and not tool_placeholder_sent:
-            tool_placeholder_sent = True
-            await msg.stream_token(f"🔍 {tool_name}...\n")
+            display = TOOL_DISPLAY_TEXT.get(tool_name)
+            if display:
+                tool_placeholder_sent = True
+                await msg.stream_token(f"{display}\n")
 
     # Una sola sesión de DB para todo el turno
     async with async_session() as db:

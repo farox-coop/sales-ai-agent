@@ -3,6 +3,13 @@
 **Fecha:** 2026-07-22
 **Depende de:** Plan 7 (pgvector-rag) — lo reemplaza
 **Origen:** Confirmación del seller: no existen documentos técnicos, CVs ni presupuestos para indexar como base de conocimiento.
+**Estado:** ✅ IMPLEMENTADO (julio 2026)
+
+> **Nota de implementación:** Las tools se implementaron directamente en `src/agent/tools.py`
+> (con el decorador `@tool` de LangChain), no en un `tool_handlers.py` separado. El diseño
+> original asumía una separación tools/handlers que el Plan 8 (migración a LangChain) eliminó.
+> La `KnowledgeBase` funciona exactamente como se diseñó en la sección 4.2.
+> Ver [PR/commit correspondiente] para los detalles de implementación.
 
 ---
 

@@ -27,8 +27,8 @@ Estado de cada plan del proyecto. Este índice se actualiza cuando un plan cambi
 | 5 | Streaming, latencia y optimización UX | [05-streaming-ux-optimization.md](05-streaming-ux-optimization.md) | 🔧 Parcial | Streaming, tool dedup y fast-path hechos; pooling y skeleton pendientes |
 | 6 | Benchmark y selección de modelo LLM | [06-llm-model-benchmark.md](06-llm-model-benchmark.md) | ⚠️ Deprecado | No es prioridad ahora |
 | 7 | Base de conocimiento con pgvector | [07-pgvector-rag.md](07-pgvector-rag.md) | ⚠️ Deprecado | Sin documentos reales para indexar. Arquitectura válida para futuro |
-| 8 | Migración a LangChain + LangGraph | [08-langchain-migration.md](08-langchain-migration.md) | ❌ Pendiente | Refactor futuro (~540 líneas menos) |
-| 9 | Conocimiento estático + scraping genia.coop | [09-rag-replacement-static-knowledge.md](09-rag-replacement-static-knowledge.md) | ❌ Pendiente | Reemplaza Plan 7. .md en memoria + keyword search |
+| 8 | Migración a LangChain + LangGraph | [08-langchain-migration.md](08-langchain-migration.md) | ✅ Implementado | Agente con `create_react_agent` + `astream_events()` |
+| 9 | Conocimiento estático + scraping genia.coop | [09-rag-replacement-static-knowledge.md](09-rag-replacement-static-knowledge.md) | ✅ Implementado | Reemplaza Plan 7. .md en memoria + keyword search + system prompt inline |
 
 Leyenda: ✅ Implementado | 🔧 Parcialmente implementado | ❌ Pendiente | ⚠️ Deprecado
 
@@ -89,7 +89,7 @@ Leyenda: ✅ Implementado | 🔧 Parcialmente implementado | ❌ Pendiente | ⚠
 │                                                       │
 │  Tools disponibles para el agente:                    │
 │  ┌──────────────────────────────────────┐            │
-│  │  buscar_documentos(query, tipo)      │            │
+│  │  buscar_documentos(query)                  │            │
 │  │    → KnowledgeBase.search()          │            │
 │  │    (archivos .md en memoria)         │            │
 │  │  buscar_cv(tecnologia)               │            │
@@ -208,9 +208,9 @@ El prompt debe incluir:
    - Al llegar a la pregunta 10 de diagnóstico, avisar que quedan pocas
    - Al finalizar, generar resumen estructurado y guardarlo con `registrar_lead`
 5. **Uso de herramientas**:
-   - Si el lead menciona una tecnología/proveedor → buscar propuestas similares
-   - Si el lead pregunta por capacidad técnica → buscar CVs relevantes
-   - Si hablan de presupuesto → buscar presupuestos de referencia
+   - Si el lead pregunta por GenIA (servicios, productos, experiencia) → responder desde el conocimiento inline en el system prompt. Usar `buscar_documentos` como respaldo para búsquedas precisas.
+   - Si el lead pregunta por perfiles o experiencia técnica específica → `buscar_cv` informa que no hay CVs indexados; derivar al equipo comercial.
+   - Si el lead da datos de identificación (nombre, email, empresa) → `registrar_lead` incrementalmente.
 
 ### Loop conversacional
 
@@ -256,40 +256,46 @@ El prompt debe incluir:
 
 ---
 
-## Base de conocimiento de GenIA (estática)
+## Base de conocimiento de GenIA (estática — implementada ✅)
 
-Ver [Plan 9 — Reemplazo de RAG por conocimiento estático](./09-rag-replacement-static-knowledge.md) para el detalle completo.
+Ver [Plan 9 — Reemplazo de RAG por conocimiento estático](./09-rag-replacement-static-knowledge.md) para el detalle completo de la decisión de arquitectura.
 
-El conocimiento de GenIA ahora se maneja con archivos `.md` estáticos cargados en memoria (keyword search simple).
-El diseño original con pgvector ([Plan 7](./07-pgvector-rag.md)) queda suspendido hasta que existan documentos
-reales que justifiquen búsqueda semántica vectorial.
+El conocimiento de GenIA se maneja con archivos `.md` estáticos cargados en memoria al iniciar el agente. El contenido (~15KB, ~3,800 tokens) se incluye directamente en el system prompt (Plan 9, Opción A), por lo que el agente responde preguntas sobre GenIA sin necesidad de tool calls. La tool `buscar_documentos` sigue disponible como respaldo para búsquedas precisas con keyword scoring.
+
+El diseño original con pgvector ([Plan 7](./07-pgvector-rag.md)) queda suspendido hasta que existan documentos reales que justifiquen búsqueda semántica vectorial (50+ documentos o 500KB+ de texto).
+
+### Archivos de conocimiento
+
+```
+data/knowledge/
+├── genia.md                 # Identidad, misión, principios
+├── servicios-ia.md          # 5 fases de servicio (Diagnóstico → Acompañamiento)
+├── productos.md             # Genway — capa de gobierno de IA
+├── casos-de-exito.md        # Sector público, salud, cooperativas
+├── industrias.md            # Sectores objetivo y desafíos
+├── tecnologias.md           # Stack AI Open Source (6 capas)
+└── proceso-de-trabajo.md    # Roadmap + ROI metrics
+```
 
 ### Pipeline offline
 
-El conocimiento de GenIA se mantiene en archivos `.md` estáticos:
+El contenido se extrajo del bundle JS de genia.coop (React SPA hosteada en GitHub Pages). El script `scripts/scrape_genia_to_md.py` extrae el texto del bundle para auditar el contenido actual. Los archivos `.md` se mantienen y editan manualmente.
 
 ```bash
-# Scrapear genia.coop y generar archivos .md (se corre una vez, luego se editan a mano)
-python scripts/scrape_genia_to_md.py
+# Auditar contenido actual del sitio
+curl -sL https://genia.coop/assets/index-3OEbpqcP.js > /tmp/genia_bundle.js
+python scripts/scrape_genia_to_md.py /tmp/genia_bundle.js
+
+# Recargar conocimiento en el agente (dentro de Docker)
+make knowledge-reload
 ```
-
-El conocimiento se mantiene en archivos `.md`:
-1. Se scrapea genia.coop una vez con `scripts/scrape_genia_to_md.py`
-2. Se generan archivos `.md` en `data/knowledge/`
-3. Se editan manualmente para precisión y completitud
-4. Se cargan en memoria al iniciar el agente (`KnowledgeBase`)
-5. `buscar_documentos` hace keyword search sobre los artículos en memoria
-
-### Búsqueda en runtime
-
-El agente llama `buscar_documentos(query, tipo)` → el handler hace keyword matching sobre `KnowledgeBase` en memoria → devuelve los artículos más relevantes con snippets.
 
 ### Fuente de la base de conocimiento
 
-- **Web de GenIA** ([genia.coop](https://genia.coop)): servicios, productos, casos de éxito, información corporativa
-
-No existen actualmente documentos internos (propuestas, CVs, presupuestos) para indexar.
-Si en el futuro aparecen, se reactiva el diseño de RAG con pgvector ([Plan 7](./07-pgvector-rag.md)).
+- **Web de GenIA** ([genia.coop](https://genia.coop)): servicios, productos, casos de éxito, información corporativa — extraído del JS bundle.
+- Los archivos `.md` se editan manualmente para mantener precisión. El scraping es punto de partida, no fuente definitiva.
+- No existen actualmente documentos internos (propuestas, CVs, presupuestos) para indexar.
+- Si en el futuro aparecen, se reactiva el diseño de RAG con pgvector ([Plan 7](./07-pgvector-rag.md)).
 
 ---
 
@@ -337,10 +343,9 @@ ia-lead-magnet/
 │   │
 │   ├── agent/
 │   │   ├── __init__.py
-│   │   ├── prompts.py          # System prompt + variantes
-│   │   ├── tools.py            # Definición de tools (buscar_documentos, etc.)
-│   │   ├── tool_handlers.py    # Implementación de cada tool
-│   │   └── conversation.py     # Lógica del loop conversacional
+│   │   ├── agent.py            # LangGraph agent singleton + astream_events()
+│   │   ├── prompts.py          # System prompt + GenIA knowledge inline
+│   │   └── tools.py            # Definición e implementación de tools (@tool decorator)
 │   │
 │   ├── chainlit/
 │   │   ├── __init__.py
@@ -521,5 +526,5 @@ Para validar que el MVP funciona:
 6. Dejar una conversación a medias, cerrar el navegador:
    - El lead queda en estado `abandonado`
    - El recordatorio se agenda
-7. Verificar que `data/knowledge/*.md` existe y tiene contenido preciso de genia.coop
-8. Durante la conversación, mencionar una tecnología → el agente usa `buscar_documentos` con resultados reales desde `KnowledgeBase`
+7. Verificar que `data/knowledge/*.md` existe y tiene contenido preciso de genia.coop ✅
+8. Durante la conversación, mencionar una tecnología → el agente conoce GenIA desde el system prompt (sin tool calls) y `buscar_documentos` tiene resultados reales desde `KnowledgeBase` ✅
