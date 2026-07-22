@@ -1,5 +1,5 @@
 import chainlit as cl
-from src.agent.conversation import process_message_streaming
+from src.agent.agent import run_agent_streaming
 from src.db.models import MessageRole, LeadStatus
 from src.db.queries import get_or_create_lead, save_interaction, close_lead, count_questions
 from src.db.session import async_session
@@ -84,12 +84,12 @@ async def on_message(message: cl.Message):
         """Callback: streamea cada token al frontend en vivo."""
         await msg.stream_token(token)
 
-    async def tool_start_callback():
-        """Callback: el LLM va a ejecutar tools, mostrar skeleton si no hay texto aún."""
+    async def tool_callback(event_type: str, tool_name: str):
+        """Callback: notifica inicio/fin de ejecución de tools."""
         nonlocal tool_placeholder_sent
-        if not tool_placeholder_sent:
+        if event_type == "start" and not tool_placeholder_sent:
             tool_placeholder_sent = True
-            await msg.stream_token("🔍 Consultando información...\n\n")
+            await msg.stream_token(f"🔍 {tool_name}...\n")
 
     # Una sola sesión de DB para todo el turno
     async with async_session() as db:
@@ -99,11 +99,14 @@ async def on_message(message: cl.Message):
         # Agregar al historial para el LLM
         history.append({"role": "user", "content": message.content})
 
-        # Respuesta del agente con streaming
-        response = await process_message_streaming(
-            message.content, history, db, lead_id,
+        # Respuesta del agente con streaming granular (LangGraph)
+        response = await run_agent_streaming(
+            user_message=message.content,
+            history=history,
+            db=db,
+            lead_id=lead_id,
             stream_callback=stream_token,
-            tool_start_callback=tool_start_callback,
+            tool_callback=tool_callback,
         )
 
         # Calcular número de pregunta

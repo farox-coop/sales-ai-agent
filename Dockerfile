@@ -5,7 +5,9 @@ WORKDIR /app
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir \
     chainlit>=2.0.0 \
-    openai>=1.0.0 \
+    langgraph>=0.2.0 \
+    langchain-core>=0.3.0 \
+    langchain-openai>=0.2.0 \
     pydantic-settings>=2.0.0 \
     python-dotenv>=1.0.0 \
     httpx>=0.27.0 \

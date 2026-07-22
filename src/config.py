@@ -2,9 +2,9 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    # LLM
-    llm_api_key: str
-    llm_base_url: str = "https://api.anthropic.com/v1"
+    # LLM via AI Gateway (endpoint OpenAI-compatible)
+    llm_api_key: str  # gateway API key
+    llm_base_url: str = "https://genway.farox.coop"  # Farox AI gateway
     llm_model: str = "claude-sonnet-4-20250514"
     llm_max_tokens: int = 4096
     llm_temperature: float = 0.7
