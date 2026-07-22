@@ -5,7 +5,7 @@
 Las empresas interesadas en adopción de IA suelen llegar mediante formularios estáticos que no capturan matices, tienen alta tasa de abandono y no generan engagement. Queremos reemplazar ese formulario por un **agente conversacional** que:
 
 - Guíe al lead con preguntas adaptativas (máx. ~12) para diagnosticar su uso de IA
-- Acceda al conocimiento sobre Farox (servicios, productos, casos de éxito de genia.coop) como contexto
+- Acceda al conocimiento sobre GenIA (servicios, productos, casos de éxito de genia.coop) como contexto
 - Persista el progreso y permita seguimiento de sesiones abandonadas
 - Notifique al equipo comercial al completarse
 - Sea **provider-agnostic** respecto al LLM (sin vendor lock-in)
@@ -41,7 +41,7 @@ Leyenda: ✅ Implementado | 🔧 Parcialmente implementado | ❌ Pendiente | ⚠
 | Chat UI | [Chainlit](https://docs.chainlit.io/) | Widget de chat profesional, libre de vendor lock-in, hooks para eventos de sesión |
 | Framework agente | Python + OpenAI SDK (`AsyncOpenAI`) | `base_url` configurable → Anthropic, OpenAI, Groq, etc. Tool calling nativo |
 | LLM | Claude (Anthropic) como default | Mejor calidad conversacional en español para este caso |
-| Conocimiento Farox | Archivos `.md` estáticos cargados en memoria (Plan 9) | Sin infraestructura extra, búsqueda por keyword simple |
+| Conocimiento GenIA | Archivos `.md` estáticos cargados en memoria (Plan 9) | Sin infraestructura extra, búsqueda por keyword simple |
 | RAG / Vector Store (suspendido) | pgvector + `sentence-transformers` (Plan 7) | Para cuando existan documentos reales que indexar |
 | Ingesta de docs (suspendido) | Pipeline offline (PDF, MD, TXT) + scraping (Plan 7) | Suspendido — ver Plan 9 para scraping → .md |
 | Base de datos | PostgreSQL 16 | Sesiones, leads, preguntas, respuestas |
@@ -58,9 +58,9 @@ Leyenda: ✅ Implementado | 🔧 Parcialmente implementado | ❌ Pendiente | ⚠
 
 ```
 ┌───────────────────────────────────────────────────────┐
-│  Opción A: Copilot embebido en farox.coop              │
+│  Opción A: Copilot embebido en genia.coop              │
 │  ┌───────────────────────────────────────┐             │
-│  │  farox.coop (sitio existente)         │             │
+│  │  genia.coop (sitio existente)         │             │
 │  │  ┌─────────────────────────────────┐  │             │
 │  │  │  Chainlit Copilot (flotante)    │  │             │
 │  │  │  🔵 "¿Charlamos sobre IA?"      │  │             │
@@ -69,7 +69,7 @@ Leyenda: ✅ Implementado | 🔧 Parcialmente implementado | ❌ Pendiente | ⚠
 │                                                       │
 │  Opción B: Chat dedicado                              │
 │  ┌───────────────────────────────────────┐             │
-│  │  chat.farox.coop (URL directa)       │             │
+│  │  chat.genia.coop (URL directa)       │             │
 │  │  Interfaz completa de Chainlit       │             │
 │  └───────────────────────────────────────┘             │
 │                                                       │
@@ -122,7 +122,7 @@ Leyenda: ✅ Implementado | 🔧 Parcialmente implementado | ❌ Pendiente | ⚠
 │  └────────────────────────────────────────┘          │
 └──────────────────────────────────────────────────────┘
 
- Conocimiento de Farox (carga estática al iniciar):
+ Conocimiento de GenIA (carga estática al iniciar):
  ┌────────────────────────────────────────────────────┐
  │  data/knowledge/*.md                               │
  │  (archivos generados desde genia.coop)             │
@@ -256,17 +256,17 @@ El prompt debe incluir:
 
 ---
 
-## Base de conocimiento de Farox (estática)
+## Base de conocimiento de GenIA (estática)
 
 Ver [Plan 9 — Reemplazo de RAG por conocimiento estático](./09-rag-replacement-static-knowledge.md) para el detalle completo.
 
-El conocimiento de Farox ahora se maneja con archivos `.md` estáticos cargados en memoria (keyword search simple).
+El conocimiento de GenIA ahora se maneja con archivos `.md` estáticos cargados en memoria (keyword search simple).
 El diseño original con pgvector ([Plan 7](./07-pgvector-rag.md)) queda suspendido hasta que existan documentos
 reales que justifiquen búsqueda semántica vectorial.
 
 ### Pipeline offline
 
-El conocimiento de Farox se mantiene en archivos `.md` estáticos:
+El conocimiento de GenIA se mantiene en archivos `.md` estáticos:
 
 ```bash
 # Scrapear genia.coop y generar archivos .md (se corre una vez, luego se editan a mano)
@@ -286,7 +286,7 @@ El agente llama `buscar_documentos(query, tipo)` → el handler hace keyword mat
 
 ### Fuente de la base de conocimiento
 
-- **Web de Farox** ([genia.coop](https://genia.coop)): servicios, productos, casos de éxito, información corporativa
+- **Web de GenIA** ([genia.coop](https://genia.coop)): servicios, productos, casos de éxito, información corporativa
 
 No existen actualmente documentos internos (propuestas, CVs, presupuestos) para indexar.
 Si en el futuro aparecen, se reactiva el diseño de RAG con pgvector ([Plan 7](./07-pgvector-rag.md)).
@@ -393,21 +393,21 @@ ia-lead-magnet/
 
 ### CORS
 
-Agregar `farox.coop` y `localhost` en `allow_origins` del `.chainlit/config.toml`:
+Agregar `genia.coop` y `localhost` en `allow_origins` del `.chainlit/config.toml`:
 
 ```toml
 [project]
-allow_origins = ["https://farox.coop", "http://localhost:*"]
+allow_origins = ["https://genia.coop", "http://localhost:*"]
 ```
 
-### Copilot embed en farox.coop
+### Copilot embed en genia.coop
 
 ```html
-<!-- En el <head> o antes de </body> de farox.coop -->
-<script src="https://chat.farox.coop/copilot/index.js"></script>
+<!-- En el <head> o antes de </body> de genia.coop -->
+<script src="https://chat.genia.coop/copilot/index.js"></script>
 <script>
   window.mountChainlitWidget({
-    chainlitServer: "https://chat.farox.coop",
+    chainlitServer: "https://chat.genia.coop",
     theme: "dark",  // o "light" según branding
   });
 </script>
@@ -421,7 +421,7 @@ import chainlit as cl
 @cl.on_chat_start
 async def start():
     if cl.context.session.client_type == "copilot":
-        # Viene del widget en farox.coop
+        # Viene del widget en genia.coop
         print("Lead desde el sitio")
     # Mismo agente para ambos
     ...
@@ -435,14 +435,14 @@ No necesitamos lógica distinta — la diferenciación es solo por si en el futu
 
 | Item | Descripción | Prioridad |
 |---|---|---|
-| Chainlit Copilot funcional (local o embebido) | Widget de chat andando, accesible desde farox.coop | Crítico |
+| Chainlit Copilot funcional (local o embebido) | Widget de chat andando, accesible desde genia.coop | Crítico |
 | Identificación conversacional | El agente pide nombre, email, empresa en las primeras preguntas y persiste con `registrar_lead` | Crítico |
 | Agente con system prompt base y tool calling loop | Conversación adaptativa funcional | Crítico |
 | Contador de preguntas y finalización | Máximo 12 preguntas + resumen final | Crítico |
 | DB (SQLite) con modelo `leads` e `interacciones` | Persistencia básica | Crítico |
 | Notificación por Telegram al completar | Feedback inmediato al equipo | Alta |
 | Deploy local con Docker Compose | `docker compose up` y funciona | Alta |
-| Conocimiento de Farox (archivos .md desde genia.coop) | Info de servicios, productos y casos de éxito disponible para el agente | Media |
+| Conocimiento de GenIA (archivos .md desde genia.coop) | Info de servicios, productos y casos de éxito disponible para el agente | Media |
 | Email de completitud + recordatorio de abandono | Seguimiento automatizado | Media |
 
 ---
@@ -512,7 +512,7 @@ CELERY_BROKER_URL=redis://redis:6379/0
 Para validar que el MVP funciona:
 
 1. `docker compose up` arranca todos los servicios sin errores
-2. **Opción A — Copilot**: Abrir farox.coop → el widget Copilot aparece → click → se abre chat
+2. **Opción A — Copilot**: Abrir genia.coop → el widget Copilot aparece → click → se abre chat
 3. **Opción B — Standalone**: Abrir `http://localhost:8000` → interfaz completa de Chainlit
 4. En ambos casos, el agente se presenta y arranca preguntando nombre, email, empresa de forma natural
 5. Completar una conversación completa y verificar:

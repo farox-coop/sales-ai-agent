@@ -5,7 +5,7 @@
 
 ## Objetivo
 
-Reemplazar el loop manual de tool calling + streaming artesanal (`conversation.py`, `client.py`, `tools.py`, `tool_handlers.py` — ~710 líneas) por el stack LangChain + LangGraph, apuntando al AI gateway de Farox como provider único.
+Reemplazar el loop manual de tool calling + streaming artesanal (`conversation.py`, `client.py`, `tools.py`, `tool_handlers.py` — ~710 líneas) por el stack LangChain + LangGraph, apuntando al AI gateway de GenIA como provider único.
 
 **Motivaciones:**
 - Las tools se definen con `@tool` decorator → schema JSON inferido automáticamente
@@ -24,7 +24,7 @@ Reemplazar el loop manual de tool calling + streaming artesanal (`conversation.p
 | Cliente LLM | `openai.AsyncOpenAI` | `langchain_openai.ChatOpenAI` → AI gateway |
 | Streaming | Loop manual con deltas | `.astream_events(version="v2")` |
 | Prompts | `SYSTEM_PROMPT` con docs de tools inline | `SystemMessage` + schemas auto-generados |
-| Conocimiento Farox (Plan 9) | .md estáticos + keyword search | Igual (no usa LangChain) |
+| Conocimiento GenIA (Plan 9) | .md estáticos + keyword search | Igual (no usa LangChain) |
 | RAG (suspendido, Plan 7) | pgvector + chunker propio | `langchain-text-splitters` + `langchain-postgres` |
 
 **Lo que NO cambia:** DB (`SQLAlchemy` + `asyncpg`), Chainlit UI, notificaciones, Celery, config base.
@@ -149,7 +149,7 @@ El nuevo `SYSTEM_PROMPT` se simplifica: **solo personalidad, tono, reglas de la 
 
 Ejemplo del nuevo prompt:
 ```
-Eres un consultor de IA de Farox que conversa con potenciales clientes...
+Eres un consultor de IA de GenIA que conversa con potenciales clientes...
 
 Tono: profesional pero cálido, en español. Usá "vos" (rioplatense).
 
@@ -278,7 +278,7 @@ from src.db.models import MessageRole, LeadStatus
 from src.db.queries import get_or_create_lead, save_interaction, close_lead, count_questions
 from src.db.session import async_session
 
-GREETING = "¡Hola! Soy el consultor de IA de Farox..."
+GREETING = "¡Hola! Soy el consultor de IA de GenIA..."
 TRIVIAL_RESPONSES = {...}  # se mantiene igual
 
 @cl.on_chat_start
@@ -348,7 +348,7 @@ Mínimo cambio: renombrar variables para reflejar el AI gateway:
 class Settings(BaseSettings):
     # LLM via AI Gateway
     llm_api_key: str                           # gateway API key
-    llm_base_url: str = "https://ai-gateway.farox.coop/v1"  # endpoint OpenAI-compatible
+    llm_base_url: str = "https://ai-gateway.genia.coop/v1"  # endpoint OpenAI-compatible
     llm_model: str = "claude-sonnet-4-20250514"
     llm_max_tokens: int = 4096
     llm_temperature: float = 0.7
@@ -398,7 +398,7 @@ Reducción neta: **~540 líneas** (58% menos).
 ```env
 # LLM via AI Gateway
 LLM_API_KEY=sk-gateway-...
-LLM_BASE_URL=https://ai-gateway.farox.coop/v1
+LLM_BASE_URL=https://ai-gateway.genia.coop/v1
 LLM_MODEL=claude-sonnet-4-20250514
 LLM_MAX_TOKENS=4096
 LLM_TEMPERATURE=0.7

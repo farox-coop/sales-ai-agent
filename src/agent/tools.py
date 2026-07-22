@@ -108,11 +108,11 @@ async def buscar_documentos(
     tipo: str = "",
     config: RunnableConfig = None,
 ) -> str:
-    """Busca documentos relevantes en la base de conocimiento de Farox: propuestas
+    """Busca documentos relevantes en la base de conocimiento de GenIA: propuestas
     comerciales, presupuestos, casos de éxito, documentos técnicos.
 
     Usala cuando el lead menciona una tecnología específica, un caso de uso, o
-    pregunta si Farox tiene experiencia en algo. También si querés respaldar una
+    pregunta si GenIA tiene experiencia en algo. También si querés respaldar una
     recomendación con un caso real.
 
     Args:
@@ -148,7 +148,7 @@ async def buscar_documentos(
 
 @tool
 async def buscar_cv(tecnologia: str, config: RunnableConfig = None) -> str:
-    """Busca perfiles profesionales (CVs) en la base de Farox que tengan experiencia
+    """Busca perfiles profesionales (CVs) en la base de GenIA que tengan experiencia
     en una tecnología o área específica.
 
     Usala cuando el lead pregunta '¿tienen a alguien que sepa X?' o '¿conocen gente

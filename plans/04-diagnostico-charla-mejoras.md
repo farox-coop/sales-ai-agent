@@ -100,7 +100,7 @@ que hace que la espera se sienta peor.
 
 El prompt dice "Ya te presentaste. No vuelvas a presentarte". Sin embargo, en el saludo
 inicial (`GREETING`) y en la primera respuesta el tono es de presentación ("Soy el consultor
-de IA de Farox"), y luego en el mensaje #2 vuelve a usar un tono de bienvenida. Es sutil
+de IA de GenIA"), y luego en el mensaje #2 vuelve a usar un tono de bienvenida. Es sutil
 pero contribuye a la sensación de "arranque lento".
 
 ### 3.2 `pregunta_numero` en la tabla `interacciones` no se está usando

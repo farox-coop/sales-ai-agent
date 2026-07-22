@@ -5,7 +5,7 @@ from src.db.queries import get_or_create_lead, save_interaction, close_lead, cou
 from src.db.session import async_session
 
 GREETING = (
-    "¡Hola! Soy el consultor de IA de Farox. "
+    "¡Hola! Soy el consultor de IA de GenIA. "
     "Contame un poco sobre vos y tu empresa, así entiendo mejor cómo puedo ayudarte."
 )
 

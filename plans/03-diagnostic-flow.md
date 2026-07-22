@@ -71,10 +71,10 @@ Actualiza los campos del lead en DB. Se llama incrementalmente (nombre primero, 
 Devuelve cuántas preguntas de diagnóstico se hicieron ya y cuántas quedan. El agente usa esto para decidir si sigue preguntando o va cerrando.
 
 ### `buscar_documentos(query, tipo?)`
-Busca en la base de conocimiento estática de Farox (archivos .md con info de genia.coop — ver Plan 9). El agente la usa si el lead menciona una tecnología o pregunta por capacidad técnica.
+Busca en la base de conocimiento estática de GenIA (archivos .md con info de genia.coop — ver Plan 9). El agente la usa si el lead menciona una tecnología o pregunta por capacidad técnica.
 
 ### `buscar_cv(tecnologia)`
-Stub informativo. Farox no mantiene una base de CVs indexados. Si el lead pregunta "¿tienen a alguien que sepa X?", el agente deriva al equipo comercial.
+Stub informativo. GenIA no mantiene una base de CVs indexados. Si el lead pregunta "¿tienen a alguien que sepa X?", el agente deriva al equipo comercial.
 
 ### `generar_resumen()`
 La usa el agente al finalizar. Genera un resumen estructurado del diagnóstico y:

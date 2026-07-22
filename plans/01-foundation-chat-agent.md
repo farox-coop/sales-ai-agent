@@ -241,7 +241,7 @@ async def close_lead(session: AsyncSession, lead_id: uuid.UUID, status: LeadStat
 ### 7. `src/agent/prompts.py` — System prompt base (MVP)
 
 ```python
-SYSTEM_PROMPT = """Eres un consultor de IA que conversa con potenciales clientes de Farox.
+SYSTEM_PROMPT = """Eres un consultor de IA que conversa con potenciales clientes de GenIA.
 
 Tu objetivo es conocer a la persona y su empresa mediante una conversación natural y empática,
 explorando su contexto y posibles necesidades de IA. No sos un formulario: hacé preguntas
@@ -350,7 +350,7 @@ import src.chainlit.hooks  # noqa: F401
 
 ```toml
 [project]
-name = "Farox IA Lead Magnet"
+name = "GenIA IA Lead Magnet"
 
 [features]
 # Sin autenticación en dev local
@@ -489,7 +489,7 @@ Para validar que este plan funciona:
 - System prompt completo con flujo de diagnóstico (12 preguntas) → Plan 3
 - Notificaciones (Telegram, email) → Plan 4
 - Celery + Redis → Plan 4
-- Conocimiento estático de Farox (archivos .md) → Plan 9
+- Conocimiento estático de GenIA (archivos .md) → Plan 9
 - RAG con pgvector → Plan 7 (suspendido, no hay documentos para indexar)
 - Copilot embed, deploy, SSL → plan futuro (Plan 6 original deprecado)
 

@@ -46,7 +46,7 @@ Completar la capa de datos para que los planes 3, 4 y 5 tengan todo lo que neces
 
 ### `documentos` — no existe
 
-Hay que crear la tabla completa. Originalmente pensada para el Plan 7 (RAG con pgvector, ahora suspendido). Actualmente sin uso — el conocimiento de Farox se maneja con archivos .md estáticos (Plan 9). La tabla se mantiene por si en el futuro se reactiva el RAG.
+Hay que crear la tabla completa. Originalmente pensada para el Plan 7 (RAG con pgvector, ahora suspendido). Actualmente sin uso — el conocimiento de GenIA se maneja con archivos .md estáticos (Plan 9). La tabla se mantiene por si en el futuro se reactiva el RAG.
 
 ---
 
@@ -227,7 +227,7 @@ make db-shell     # Verificar schema
 
 - Tool calling, `registrar_lead`, `contador_preguntas` → Plan 3
 - Notificaciones, Celery, Redis → Plan 4
-- Conocimiento estático de Farox → Plan 9
+- Conocimiento estático de GenIA → Plan 9
 - RAG con pgvector → Plan 7 (suspendido)
 - Índices adicionales en DB (se agregan cuando midamos performance)
 

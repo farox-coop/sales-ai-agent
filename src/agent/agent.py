@@ -19,7 +19,7 @@ from src.agent.prompts import SYSTEM_PROMPT
 
 
 def _build_model() -> ChatOpenAI:
-    """Crea el modelo ChatOpenAI apuntando al AI gateway de Farox.
+    """Crea el modelo ChatOpenAI apuntando al AI gateway de GenIA.
 
     ChatOpenAI usa el protocolo OpenAI-compatible del gateway — el vendor lock-in
     es irrelevante porque el gateway traduce a cualquier provider (Anthropic,

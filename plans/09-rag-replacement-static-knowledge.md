@@ -11,7 +11,7 @@
 ### 1.1 Lo que se asumía hasta ahora
 
 Los planes 1, 2, 3, 7, 8 y el plan maestro (`lead-magnet-conversational-agent.md`) asumían la
-existencia de una base de conocimiento interna de Farox compuesta por:
+existencia de una base de conocimiento interna de GenIA compuesta por:
 
 - **Propuestas comerciales** (PDFs en Google Drive)
 - **CVs de ingenieros** (perfiles profesionales para matchear con necesidades del lead)
@@ -24,7 +24,7 @@ modelo de embeddings `sentence-transformers`, pipeline de chunking, búsqueda se
 ### 1.2 La realidad
 
 Después de hablar con el seller, se confirmó que **no existen esos documentos**. El único
-contenido disponible que describe lo que Farox hace como empresa es:
+contenido disponible que describe lo que GenIA hace como empresa es:
 
 - **El sitio web https://genia.coop** — expone servicios, productos, capacidades y casos de
   éxito alrededor de IA.
@@ -132,8 +132,8 @@ de las tools.
 ### 4.1 Estructura de archivos
 
 ```
-data/knowledge/                    # Conocimiento estático sobre Farox
-├── farox.md                       # Quiénes somos, misión, servicios principales
+data/knowledge/                    # Conocimiento estático sobre GenIA
+├── genia.md                       # Quiénes somos, misión, servicios principales
 ├── servicios-ia.md                # Servicios de IA: consultoría, desarrollo, entrenamiento
 ├── productos.md                   # Productos de IA (ej. agentes, automatización)
 ├── casos-de-exito.md              # Casos de éxito / portfolio
@@ -149,7 +149,7 @@ src/knowledge/
 ### 4.2 `src/knowledge/loader.py`
 
 ```python
-"""Carga y búsqueda simple sobre la base de conocimiento estática de Farox.
+"""Carga y búsqueda simple sobre la base de conocimiento estática de GenIA.
 
 El conocimiento viene de archivos .md generados a partir del scraping de
 genia.coop. Se cargan en memoria al iniciar el agente y se buscan por
@@ -326,23 +326,23 @@ en el system prompt. El agente tiene acceso a TODO el conocimiento sin tool call
 # En prompts.py
 from src.knowledge.loader import knowledge_base
 
-FAROX_KNOWLEDGE = knowledge_base.as_context_text()
+GENIA_KNOWLEDGE = knowledge_base.as_context_text()
 
-SYSTEM_PROMPT = f"""Eres un consultor de IA de Farox...
+SYSTEM_PROMPT = f"""Eres un consultor de IA de GenIA...
 
-## Conocimiento sobre Farox
+## Conocimiento sobre GenIA
 
 A continuación tenés información actualizada sobre los servicios, productos y
-capacidades de Farox. Usala para responder preguntas del lead con precisión.
+capacidades de GenIA. Usala para responder preguntas del lead con precisión.
 
-{FAROX_KNOWLEDGE}
+{GENIA_KNOWLEDGE}
 
 ## Herramientas disponibles
 ...
 """
 ```
 
-**Ventaja:** El agente siempre tiene el contexto de Farox sin necesidad de tool calls.
+**Ventaja:** El agente siempre tiene el contexto de GenIA sin necesidad de tool calls.
 El lead pregunta "¿tienen experiencia en retail?" y el agente ya sabe la respuesta.
 
 **Riesgo:** Si el contenido crece mucho, empieza a comerse tokens del system prompt y
@@ -352,13 +352,13 @@ páginas), no es un problema.
 **Opción B: Solo por tool call (más escalable)**
 
 El system prompt solo menciona que `buscar_documentos` existe y puede buscar info de
-Farox. El conocimiento se carga en `KnowledgeBase` y se busca on-demand.
+GenIA. El conocimiento se carga en `KnowledgeBase` y se busca on-demand.
 
 **Ventaja:** Escala mejor si el contenido crece. El agente solo "ve" lo relevante a
 la pregunta.
 
 **Desventaja:** Agrega un tool call (y por lo tanto un round-trip al LLM) cada vez que
-el lead pregunta algo sobre Farox. Para contenido chico, es overhead innecesario.
+el lead pregunta algo sobre GenIA. Para contenido chico, es overhead innecesario.
 
 **Recomendación:** **Opción A ahora, Opción B cuando el contenido supere ~20KB (~5000 tokens).**
 Incluso se pueden combinar: incluir un resumen de servicios en el prompt, y usar la tool
@@ -375,7 +375,7 @@ from src.knowledge.loader import knowledge_base
 async def handle_buscar_documentos(
     db: AsyncSession, lead_id: uuid.UUID, args: dict
 ) -> dict:
-    """Busca en la base de conocimiento estática de Farox."""
+    """Busca en la base de conocimiento estática de GenIA."""
     query = args.get("query", "")
 
     if not query:
@@ -408,13 +408,13 @@ async def handle_buscar_documentos(
 async def handle_buscar_cv(
     db: AsyncSession, lead_id: uuid.UUID, args: dict
 ) -> dict:
-    """Deprecada: Farox no tiene CVs indexados."""
+    """Deprecada: GenIA no tiene CVs indexados."""
     return {
         "tecnologia": args.get("tecnologia", ""),
         "resultados": [],
         "total": 0,
         "nota": (
-            "Farox no mantiene una base de CVs indexados. Si el lead pregunta "
+            "GenIA no mantiene una base de CVs indexados. Si el lead pregunta "
             "por perfiles específicos, derivá la consulta al equipo comercial "
             "para que evalúen disponibilidad de recursos."
         ),
@@ -431,9 +431,9 @@ La definición de `buscar_documentos` se actualiza para reflejar la nueva realid
     "function": {
         "name": "buscar_documentos",
         "description": (
-            "Busca información sobre Farox en la base de conocimiento: servicios, "
+            "Busca información sobre GenIA en la base de conocimiento: servicios, "
             "productos, casos de éxito, industrias, tecnologías y metodología de trabajo. "
-            "Usala cuando el lead pregunta sobre las capacidades de Farox, experiencia "
+            "Usala cuando el lead pregunta sobre las capacidades de GenIA, experiencia "
             "en una industria, casos de éxito o stack tecnológico."
         ),
         ...
@@ -500,13 +500,13 @@ el borrador inicial y quizás una vez cada 3-6 meses para actualizar.
 
 | Ítem | Acción |
 |------|--------|
-| `data/knowledge/*.md` | **Nuevo**. Archivos de conocimiento sobre Farox |
+| `data/knowledge/*.md` | **Nuevo**. Archivos de conocimiento sobre GenIA |
 | `src/knowledge/__init__.py` | **Nuevo** |
 | `src/knowledge/loader.py` | **Nuevo**. Carga y búsqueda simple en memoria |
 | `scripts/scrape_genia_to_md.py` | **Nuevo**. Scraping → .md (una vez) |
 | `src/agent/tools.py` | Actualizar descripciones de `buscar_documentos` y `buscar_cv` |
 | `src/agent/tool_handlers.py` | Reemplazar stubs por `KnowledgeBase.search()` |
-| `src/agent/prompts.py` | Agregar sección con conocimiento de Farox (opcional: inline en system prompt) |
+| `src/agent/prompts.py` | Agregar sección con conocimiento de GenIA (opcional: inline en system prompt) |
 | Tabla `documentos` en DB | Se puede mantener vacía (no molesta) o dropear en migración futura |
 | `Makefile` | Agregar target `scrape-genia` y `knowledge-reload` |
 
@@ -552,7 +552,7 @@ aparecen documentos reales, ya existe. Es más limpio dejarla que crear/dropear/
 
 1. Decidir si el conocimiento va inline en el system prompt o solo vía tool
 2. Actualizar `prompts.py`
-3. Probar conversación donde el lead pregunta por servicios de Farox
+3. Probar conversación donde el lead pregunta por servicios de GenIA
 4. Verificar que las respuestas son precisas y no alucina features inexistentes
 
 ### Fase 9D — Limpieza de planes existentes (1 sesión)
@@ -568,13 +568,13 @@ Actualizar los planes 1, 2, 3, 7, 8 y el plan maestro para reflejar que:
 
 | Archivo | Acción |
 |---------|--------|
-| `data/knowledge/*.md` | **Nuevo**. Conocimiento estático de Farox (~7-10 archivos) |
+| `data/knowledge/*.md` | **Nuevo**. Conocimiento estático de GenIA (~7-10 archivos) |
 | `src/knowledge/__init__.py` | **Nuevo** |
 | `src/knowledge/loader.py` | **Nuevo**. KnowledgeBase con búsqueda simple |
 | `scripts/scrape_genia_to_md.py` | **Nuevo**. Scraping one-shot → .md |
 | `src/agent/tools.py` | Actualizar descripciones de `buscar_documentos` y `buscar_cv` |
 | `src/agent/tool_handlers.py` | `handle_buscar_documentos` → `knowledge_base.search()`. `handle_buscar_cv` → stub honesto |
-| `src/agent/prompts.py` | Agregar conocimiento de Farox (inline o referencia) |
+| `src/agent/prompts.py` | Agregar conocimiento de GenIA (inline o referencia) |
 | `Makefile` | Agregar `scrape-genia` target |
 | `plans/09-rag-replacement-static-knowledge.md` | **Este archivo** |
 
@@ -582,7 +582,7 @@ Actualizar los planes 1, 2, 3, 7, 8 y el plan maestro para reflejar que:
 
 ## 10. Mejora futura: RAG con documentos reales
 
-Si en el futuro Farox genera o adquiere documentos que justifiquen una base de conocimiento
+Si en el futuro GenIA genera o adquiere documentos que justifiquen una base de conocimiento
 semántica (propuestas reales, documentación técnica, papers, CVs de un equipo grande), el
 diseño de RAG con pgvector del Plan 7 sigue siendo la arquitectura recomendada. La interfaz
 de `buscar_documentos` se diseñó para que el cambio de backend (memoria → pgvector) sea
@@ -606,5 +606,5 @@ Mientras tanto, KISS.
 4. `KnowledgeBase.search("industria retail")` devuelve casos de éxito si existen
 5. `handle_buscar_documentos` ya no es un mock — devuelve resultados reales
 6. `handle_buscar_cv` devuelve mensaje informativo (sin CVs disponibles)
-7. En una conversación de prueba, el agente responde con precisión sobre servicios de Farox
-8. El agente no alucina features o servicios que Farox no ofrece
+7. En una conversación de prueba, el agente responde con precisión sobre servicios de GenIA
+8. El agente no alucina features o servicios que GenIA no ofrece

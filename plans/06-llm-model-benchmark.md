@@ -22,7 +22,7 @@ naturalidad del español rioplatense.
 
 ### 1.1 Restricción de infraestructura
 
-**Todo el tráfico LLM debe pasar por el gateway `genway.farox.coop`.** No está permitido
+**Todo el tráfico LLM debe pasar por el gateway `genway.genia.coop`.** No está permitido
 usar LLMs por fuera de este gateway (nada de APIs directas a DeepSeek, Anthropic, OpenAI,
 Fireworks, Together, etc.).
 

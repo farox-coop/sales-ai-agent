@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     # LLM via AI Gateway (endpoint OpenAI-compatible)
     llm_api_key: str  # gateway API key
-    llm_base_url: str = "https://genway.farox.coop"  # Farox AI gateway
+    llm_base_url: str = "https://your-llm-gateway.example.com"  # LLM AI gateway
     llm_model: str = "claude-sonnet-4-20250514"
     llm_max_tokens: int = 4096
     llm_temperature: float = 0.7

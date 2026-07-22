@@ -6,7 +6,7 @@
 > El único contenido disponible es el sitio web https://genia.coop, cuyo volumen
 > (~10-20 páginas) no justifica una pipeline de RAG con pgvector.
 >
-> **Futuro:** Este diseño se reactivará si Farox genera documentos reales (propuestas,
+> **Futuro:** Este diseño se reactivará si GenIA genera documentos reales (propuestas,
 > documentación técnica, CVs, papers) en volumen suficiente para justificar búsqueda
 > semántica vectorial. La arquitectura sigue siendo válida.
 
@@ -27,7 +27,7 @@
 ### Nuevo diseño
 - **pgvector** como vector store, dentro de PostgreSQL (ya en uso)
 - **Pipeline offline manual**: el operador baja archivos de Google Drive (PDF, MD, TXT) y corre un script que los chunkea, embeddea y guarda en pgvector
-- **Scraping de genia.coop**: script que scrapea la web de Farox y la indexa en pgvector
+- **Scraping de genia.coop**: script que scrapea la web de GenIA y la indexa en pgvector
 - **Cero infraestructura nueva**: mismo PostgreSQL, misma conexión asyncpg, mismo ORM
 
 ### ¿Por qué pgvector?
