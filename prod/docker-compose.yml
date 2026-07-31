@@ -1,0 +1,51 @@
+# =============================================================================
+# Production app stack: Chainlit app + PostgreSQL
+# Part of sales-ai-network (shared with nginx/certbot stack)
+# =============================================================================
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: sales-ai-agent:latest
+    restart: always
+    env_file:
+      - .env
+    command: chainlit run src/main.py --host 0.0.0.0 --port 8000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - sales-ai-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: lead_magnet
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - sales-ai-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d lead_magnet"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  pgdata:
+
+networks:
+  sales-ai-network:
+    external: true

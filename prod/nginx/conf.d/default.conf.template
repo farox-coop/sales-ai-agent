@@ -1,0 +1,19 @@
+# =============================================================================
+# HTTP (port 80) — ACME challenge + HTTPS redirect
+# =============================================================================
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ${DOMAIN};
+
+    # Let's Encrypt ACME challenge (webroot)
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    # Everything else → HTTPS
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
