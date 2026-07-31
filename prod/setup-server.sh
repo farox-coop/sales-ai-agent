@@ -91,9 +91,9 @@ log "UFW status:"
 $SUDO ufw status verbose
 
 # --- Create external Docker network ---
-if ! docker network inspect sales-ai-network &>/dev/null; then
+if ! $SUDO docker network inspect sales-ai-network &>/dev/null; then
     log "Creating external Docker network 'sales-ai-network'..."
-    docker network create sales-ai-network
+    $SUDO docker network create sales-ai-network
 else
     log "Docker network 'sales-ai-network' already exists."
 fi
