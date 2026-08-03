@@ -17,17 +17,7 @@ services:
       - certbot-conf:/etc/letsencrypt:ro
     networks:
       - sales-ai-network
-    # Background reload loop — picks up renewed certs without downtime
-    command: >
-      /bin/sh -c "
-      nginx -g 'daemon off;' &
-      NGINX_PID=$$!
-      while true; do
-        sleep 6h
-        nginx -s reload
-      done
-      wait $$NGINX_PID
-      "
+    command: /bin/sh -c "nginx -g 'daemon off;' & NGINX_PID=$$!; while true; do sleep 6h; nginx -s reload; done; wait $$NGINX_PID"
 
   certbot:
     image: certbot/certbot:v2.11.0
@@ -37,15 +27,7 @@ services:
       - certbot-conf:/etc/letsencrypt
     networks:
       - sales-ai-network
-    # Renew loop — attempts renewal every 12h, only actually renews near expiry
-    entrypoint: >
-      /bin/sh -c "
-      trap 'exit 0' TERM INT
-      while true; do
-        certbot renew --quiet
-        sleep 12h
-      done
-      "
+    entrypoint: /bin/sh -c "trap 'exit 0' TERM INT; while true; do certbot renew --quiet; sleep 12h; done"
     # certbot stays running so the container doesn't exit
 
 volumes:
