@@ -44,3 +44,31 @@ src/
 ├── knowledge/    # Base de conocimiento estática (GenIA)
 └── config.py     # Configuración centralizada
 ```
+
+## Formato OKF (conocimiento)
+
+Los artículos de conocimiento en `data/knowledge/` usan **OKF (Open Knowledge Format)**: archivos `.md` con frontmatter YAML que definen metadatos estructurados.
+
+### Estructura de un artículo
+
+```markdown
+---
+type: concept          # Tipo de artículo (concept, service, product, etc.)
+title: Título          # Título descriptivo
+description: Resumen   # Descripción corta para el índice
+tags: [tag1, tag2]     # Etiquetas para búsqueda semántica
+---
+
+# Contenido en Markdown
+
+El artículo puede referenciar otros con sintaxis `[[slug]]`, generando
+navegación cruzada entre piezas de conocimiento.
+```
+
+### Cómo funciona
+
+- Todos los `.md` se cargan en memoria al iniciar la app (`src/knowledge/loader.py`).
+- El agente expone dos tools para navegarlo:
+  - `listar_articulos` — devuelve índice con slug, título, descripción y tags.
+  - `leer_articulo` — devuelve contenido completo de un artículo por slug.
+- El LLM decide cuándo consultar la base según la conversación; no hay scoring ni embeddings.
