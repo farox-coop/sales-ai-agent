@@ -25,11 +25,30 @@ Two independent Docker Compose stacks sharing an external network:
 - Certbot auto-renews via a 12h loop inside its container
 - Nginx auto-reloads via a 6h loop to pick up renewed certificates
 
+## GHCR Authentication
+
+The app Docker image is built by GitHub Actions on every push to `main` and published to `ghcr.io/farox-coop/sales-ai-agent-app`. The VPS pulls this image instead of building it locally.
+
+### Creating a GHCR token
+
+1. Go to GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens
+2. Create a token with **read:packages** scope on the `farox-coop/sales-ai-agent-app` package
+3. Copy the token and set it as `GHCR_TOKEN` environment variable on the VPS
+
+### Logging in on the VPS
+
+```bash
+echo $GHCR_TOKEN | docker login ghcr.io -u TU_USUARIO_GITHUB --password-stdin
+```
+
+The token only needs read access to packages.
+
 ## Prerequisites
 
 - **VPS**: Debian 12 or Ubuntu 24.04 LTS (1 vCPU, 1 GB RAM minimum)
 - **Domain**: `chat.genia.coop` (DNS A record pointing to the VPS public IP)
 - **Ports**: 22 (SSH), 80 (HTTP), 443 (HTTPS) open
+- **GHCR token**: A GitHub personal access token with `read:packages` scope
 
 ## Deployment Steps
 
@@ -45,7 +64,15 @@ bash prod/setup-server.sh
 
 This installs Docker, UFW, and creates the shared `sales-ai-network`.
 
-### 2. Configure environment
+### 2. Login to GHCR
+
+```bash
+echo $GHCR_TOKEN | docker login ghcr.io -u TU_USUARIO_GITHUB --password-stdin
+```
+
+This is required for `docker compose pull app` to work. See the "GHCR Authentication" section above.
+
+### 3. Configure environment
 
 ```bash
 cp prod/.env.example prod/.env
@@ -58,21 +85,21 @@ Edit `prod/.env` with real values:
 - `LLM_API_KEY`, `LLM_BASE_URL`, `LLM_MODEL` — your LLM gateway credentials
 - Update `SQLALCHEMY_ASYNC_URL` and `DATABASE_SYNC_URL` with the real password
 
-### 3. Initial deploy (HTTP-only)
+### 4. Initial deploy (HTTP-only)
 
 ```bash
 make prod-setup
 ```
 
 This will:
-1. Build the app Docker image
+1. Pull the app Docker image from GHCR
 2. Start app + postgres
 3. Render HTTP-only nginx config (ACME challenge path + redirect)
 4. Start nginx + certbot
 
 At this point, visiting `http://chat.genia.coop` should redirect to HTTPS (which won't work yet — we need the cert).
 
-### 4. Issue TLS certificate
+### 5. Issue TLS certificate
 
 ```bash
 make ssl-init
@@ -82,7 +109,7 @@ This runs certbot with the webroot plugin to obtain a Let's Encrypt certificate,
 
 After this, `https://chat.genia.coop` should load the Chainlit chat.
 
-### 5. Verify
+### 6. Verify
 
 ```bash
 make prod-status
@@ -114,7 +141,7 @@ git pull
 make prod-deploy
 ```
 
-This rebuilds the image, cycles the app container (with zero-downtime for postgres), and reloads nginx.
+This pulls the latest app image from GHCR (built by GitHub Actions on push to `main`), cycles the app container (with zero-downtime for postgres), and reloads nginx.
 
 ### Restart services
 
@@ -148,6 +175,8 @@ All production config lives in `prod/.env`. The template at `prod/.env.example` 
 |---|---|
 | `DOMAIN` | Public domain name |
 | `SSL_EMAIL` | Let's Encrypt notification email |
+| `APP_IMAGE` | GHCR image path (e.g. `ghcr.io/farox-coop/sales-ai-agent-app`) |
+| `IMAGE_TAG` | Image tag to pull (default: `latest`) |
 | `POSTGRES_PASSWORD` | PostgreSQL password |
 | `LLM_API_KEY` | LLM gateway API key |
 | `LLM_BASE_URL` | LLM gateway base URL |

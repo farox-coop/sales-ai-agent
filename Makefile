@@ -56,7 +56,7 @@ validate-env:
 # --- App stack ---
 
 prod-build: validate-env
-	$(COMPOSE_PROD) build
+	$(COMPOSE_PROD) pull app
 
 prod-up: validate-env
 	$(COMPOSE_PROD) up -d --wait
@@ -85,8 +85,10 @@ prod-status:
 prod-setup: validate-env
 	@echo "=== Creating external network (if missing) ==="
 	@docker network inspect sales-ai-network > /dev/null 2>&1 || docker network create sales-ai-network
-	@echo "=== Building and starting app stack ==="
-	$(COMPOSE_PROD) up -d --build --wait
+	@echo "=== Pulling app image ==="
+	$(COMPOSE_PROD) pull app
+	@echo "=== Starting app stack ==="
+	$(COMPOSE_PROD) up -d --wait
 	@echo "=== Rendering HTTP-only nginx config ==="
 	make nginx-config-http
 	@echo "=== Starting nginx stack ==="
@@ -98,8 +100,8 @@ prod-setup: validate-env
 prod-deploy: validate-env
 	@echo "=== Pulling latest code ==="
 	git pull
-	@echo "=== Rebuilding app image ==="
-	$(COMPOSE_PROD) build
+	@echo "=== Pulling app image ==="
+	$(COMPOSE_PROD) pull app
 	@echo "=== Stopping nginx ==="
 	$(COMPOSE_NGINX) down
 	@echo "=== Cycling app ==="

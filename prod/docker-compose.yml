@@ -5,10 +5,7 @@
 
 services:
   app:
-    build:
-      context: ..
-      dockerfile: Dockerfile
-    image: sales-ai-agent:latest
+    image: ${APP_IMAGE:?Set APP_IMAGE in .env}:${IMAGE_TAG:-latest}
     restart: always
     env_file:
       - .env
