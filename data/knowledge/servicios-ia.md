@@ -65,4 +65,4 @@ Actualización y optimización continua por arquitectos de IA que están en la f
 - Optimización de rendimiento
 - Capacitación y evolución del equipo interno
 
-Ver también: [[proceso-de-trabajo]], [[casos-de-exito]], [[tecnologias]]
+Ver también: [[genbase]], [[inferencia]], [[proceso-de-trabajo]], [[casos-de-exito]], [[tecnologias]]

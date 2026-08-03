@@ -51,4 +51,4 @@ Cualquier organización que busque adoptar IA de manera controlada, sin exponer 
 - Independencia de proveedores externos
 - Trazabilidad y gobernanza del uso de IA
 
-Ver también: [[casos-de-exito]]
+Ver también: [[genbase]], [[genway]], [[inferencia]], [[casos-de-exito]]

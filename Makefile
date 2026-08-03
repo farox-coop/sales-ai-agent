@@ -33,7 +33,9 @@ db-reset:
 	$(COMPOSE_DEV) up --build
 
 scrape-genia:
-	curl -sL https://genia.coop/assets/index-3OEbpqcP.js > /tmp/genia_bundle.js
+	@BUNDLE=$$(curl -sL https://genia.coop/ | grep -oP 'assets/index-[^"]+\.js' | head -1) && \
+		echo "Downloading $$BUNDLE..." && \
+		curl -sL "https://genia.coop/$$BUNDLE" > /tmp/genia_bundle.js
 	python3 scripts/scrape_genia_to_md.py /tmp/genia_bundle.js
 
 knowledge-reload:

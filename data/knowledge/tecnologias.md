@@ -65,4 +65,4 @@ Trazabilidad total de cada respuesta. Auditá, medí y optimizá el uso de IA co
 - **Reemplazable**: ninguna capa genera vendor lock-in
 - **Estándares abiertos**: APIs y protocolos estándar, sin formatos propietarios
 
-Ver también: [[productos]], [[servicios-ia]]
+Ver también: [[genbase]], [[inferencia]], [[productos]], [[servicios-ia]]

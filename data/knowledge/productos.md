@@ -49,4 +49,4 @@ Aplicá reglas de acceso, auditoría y retención pensadas para datos sensibles.
 - Facilita el cumplimiento normativo (protección de datos, regulaciones sectoriales)
 - Reduce costos al permitir migración gradual a modelos open-source
 
-Ver también: [[tecnologias]], [[servicios-ia]]
+Ver también: [[genbase]], [[genway]], [[inferencia]], [[tecnologias]], [[servicios-ia]]
