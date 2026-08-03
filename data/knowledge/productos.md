@@ -1,3 +1,10 @@
+---
+type: concept
+title: Productos de IA
+description: "Genway, la capa de gobierno de IA que da visibilidad total y control sobre cómo, quién y con qué modelos se trabaja en tu organización."
+tags: [productos, genway, gobierno, control, privacidad, ruteo]
+---
+
 # Productos de IA
 
 ## Genway — Centro de Mando de Adopción de IA
@@ -41,3 +48,5 @@ Aplicá reglas de acceso, auditoría y retención pensadas para datos sensibles.
 - Proporciona métricas y trazabilidad total
 - Facilita el cumplimiento normativo (protección de datos, regulaciones sectoriales)
 - Reduce costos al permitir migración gradual a modelos open-source
+
+Ver también: [[tecnologias]], [[servicios-ia]]

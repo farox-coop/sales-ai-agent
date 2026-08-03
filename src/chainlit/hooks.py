@@ -14,7 +14,8 @@ GREETING = (
 # Si el valor es None o string vacío, tampoco se muestra nada.
 TOOL_DISPLAY_TEXT: dict[str, str | None] = {
     "registrar_lead": "Tomando nota...",
-    "buscar_documentos": "Buscando información...",
+    "listar_articulos": "Consultando información...",
+    "leer_articulo": "Consultando información...",
     "buscar_cv": "Buscando perfiles...",
     "generar_resumen": "Preparando tu diagnóstico...",
     # contador_preguntas es puramente interno, no se muestra.

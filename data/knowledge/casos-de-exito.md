@@ -1,3 +1,10 @@
+---
+type: concept
+title: Casos de Uso y Soluciones
+description: "Soluciones de IA para sector público, salud, cooperativas y organizaciones donde la privacidad y la soberanía de datos son críticas."
+tags: [casos-de-exito, sector-publico, salud, cooperativas, soluciones]
+---
+
 # Casos de Uso y Soluciones
 
 ## Soluciones Específicas para Necesidades Soberanas
@@ -41,3 +48,5 @@ Cada solución se diseña a medida del sector y la organización, priorizando:
 2. **Cumplimiento normativo**: adaptado a las regulaciones del sector
 3. **Escalabilidad controlada**: desde quick-wins hasta transformación completa
 4. **Transferencia de conocimiento**: el equipo interno se apropia de la tecnología
+
+Ver también: [[industrias]], [[servicios-ia]]

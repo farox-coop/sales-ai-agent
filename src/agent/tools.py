@@ -103,38 +103,41 @@ async def contador_preguntas(config: RunnableConfig = None) -> str:
 
 
 @tool
-async def buscar_documentos(
-    query: str,
-    config: RunnableConfig = None,
-) -> str:
-    """Busca información sobre GenIA en la base de conocimiento: servicios,
-    productos, casos de éxito, industrias, tecnologías y metodología de trabajo.
+async def listar_articulos(config: RunnableConfig = None) -> str:
+    """Lista los artículos disponibles en la base de conocimiento de GenIA, con
+    título, descripción y tags.
 
-    Usala cuando el lead pregunta sobre las capacidades de GenIA, experiencia en
-    una industria, casos de éxito, stack tecnológico, o métodos de trabajo. También
-    si necesitás respaldar una recomendación con información precisa sobre GenIA.
+    Usala primero para orientarte antes de leer el contenido completo de un
+    artículo específico con leer_articulo. No tenés el conocimiento de GenIA
+    precargado: para cualquier pregunta sobre GenIA, sus servicios, productos,
+    tecnologías o experiencia, empezar por acá.
+    """
+    articles = knowledge_base.list_articles()
+    lines = [
+        f"- {a['slug']}: {a['title']} — {a['description']} [{', '.join(a['tags'])}]"
+        for a in articles
+    ]
+    return "\n".join(lines)
+
+
+@tool
+async def leer_articulo(slug: str, config: RunnableConfig = None) -> str:
+    """Devuelve el contenido completo de un artículo de la base de conocimiento de
+    GenIA, identificado por su slug (obtenido con listar_articulos).
+
+    El artículo puede contener links a otros artículos relacionados con el formato
+    [[slug]] — seguilos con leer_articulo si necesitás más contexto.
 
     Args:
-        query: Texto de búsqueda, ej. 'experiencia en sector público' o 'stack open source'.
+        slug: identificador del artículo, ej. 'casos-de-exito'.
     """
-    if not query or not query.strip():
-        return "Query vacía. Especificá qué información de GenIA necesitás buscar."
-
-    results = knowledge_base.search(query.strip(), top_k=3)
-
-    if not results:
+    content = knowledge_base.get_full_article(slug.strip())
+    if not content:
         return (
-            f"No se encontró información sobre '{query}' en la base de conocimiento "
-            f"de GenIA. Respondé con honestidad: si no tenés datos sobre ese tema, "
-            f"no inventes. Ofrecé derivar la consulta al equipo comercial."
+            f"No existe un artículo con slug '{slug}'. "
+            f"Usá listar_articulos para ver los disponibles."
         )
-
-    lines = [f"Resultados para '{query}' — {len(results)} encontrados:"]
-    for r in results:
-        lines.append(f"\n### {r['title']} (relevancia: {r['score']})")
-        lines.append(f"{r['snippet']}")
-
-    return "\n".join(lines)
+    return content
 
 
 @tool
@@ -197,11 +200,11 @@ async def generar_resumen(config: RunnableConfig = None) -> str:
     )
 
 
-# Lista de tools que el agente expone al LLM
 ALL_TOOLS = [
     registrar_lead,
     contador_preguntas,
-    buscar_documentos,
+    listar_articulos,
+    leer_articulo,
     buscar_cv,
     generar_resumen,
 ]

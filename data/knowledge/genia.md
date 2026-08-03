@@ -1,3 +1,10 @@
+---
+type: concept
+title: GenIA — Quiénes Somos
+description: "Identidad, misión y principios de GenIA, una iniciativa de cooperativas de tecnología por una IA justa y soberana."
+tags: [genia, identidad, mision, principios, cooperativismo]
+---
+
 # GenIA — Quiénes Somos
 
 ## Identidad
@@ -22,3 +29,5 @@ Somos cooperativas de tecnología por una **IA justa y soberana**. Impulsamos qu
 
 - Web: <https://genia.coop>
 - Email: hola@genia.coop
+
+Ver también: [[servicios-ia]], [[productos]], [[proceso-de-trabajo]]

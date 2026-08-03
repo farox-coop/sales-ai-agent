@@ -1,3 +1,10 @@
+---
+type: concept
+title: Proceso de Trabajo y Metodología
+description: "Metodología de 5 fases para adopción de IA: diagnóstico, implementación, piloto, desarrollo y acompañamiento continuo, con métricas de ROI."
+tags: [proceso, metodologia, fases, diagnostico, implementacion, roi]
+---
+
 # Proceso de Trabajo y Metodología
 
 ## Nuestro Roadmap
@@ -83,3 +90,5 @@ Una estrategia propia de IA **no es un gasto, es un activo financiero**. La IA s
 - **Menos Costos Operativos**: los proyectos de automatización suelen alcanzar el punto de equilibrio (break-even) en **menos de 6 meses**. Cada proceso automatizado libera tiempo y reduce costos fijos de forma permanente.
 - **Ahorro en Inferencia**: una vez amortizado el hardware, el **costo marginal por consulta es efectivamente cero**. Sin suscripciones mensuales por usuario ni costos por token que escalen con el uso.
 - **Eficiencia y Productividad**: latencia reducida, sin dependencias externas y disponibilidad continua para procesos críticos. Automatizá con mayor velocidad, estabilidad y control sin trasladar eficiencia a terceros. Uptime bajo tu control.
+
+Ver también: [[servicios-ia]], [[casos-de-exito]]

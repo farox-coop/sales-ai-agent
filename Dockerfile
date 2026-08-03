@@ -16,7 +16,8 @@ RUN pip install --no-cache-dir --upgrade pip && \
     "sqlalchemy[asyncio]>=2.0.0" \
     asyncpg>=0.30.0 \
     psycopg2-binary>=2.9.0 \
-    "alembic>=1.13.0"
+    "alembic>=1.13.0" \
+    "pyyaml>=6.0"
 
 COPY src/ ./src/
 COPY data/ ./data/

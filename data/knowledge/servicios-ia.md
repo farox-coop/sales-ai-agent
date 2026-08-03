@@ -1,3 +1,10 @@
+---
+type: concept
+title: Servicios de IA
+description: "Servicios de IA self-hosted con tecnología Open Source: diagnóstico, implementación, piloto controlado, desarrollo y acompañamiento continuo."
+tags: [servicios, diagnostico, implementacion, piloto, desarrollo, acompanamiento]
+---
+
 # Servicios de IA
 
 ## Visión General
@@ -57,3 +64,5 @@ Actualización y optimización continua por arquitectos de IA que están en la f
 - Actualización de modelos y stack
 - Optimización de rendimiento
 - Capacitación y evolución del equipo interno
+
+Ver también: [[proceso-de-trabajo]], [[casos-de-exito]], [[tecnologias]]

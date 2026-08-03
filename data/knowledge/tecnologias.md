@@ -1,3 +1,10 @@
+---
+type: concept
+title: Stack Tecnológico
+description: "Arquitectura de IA 100% open-source y self-hosted: hardware, inferencia, modelos, orquestación, interfaz y observabilidad."
+tags: [tecnologia, stack, open-source, self-hosted, hardware, modelos, inferencia]
+---
+
 # Stack Tecnológico
 
 ## AI Open Stack — Arquitectura Libre
@@ -57,3 +64,5 @@ Trazabilidad total de cada respuesta. Auditá, medí y optimizá el uso de IA co
 - **Auditable**: cada componente puede ser inspeccionado y verificado
 - **Reemplazable**: ninguna capa genera vendor lock-in
 - **Estándares abiertos**: APIs y protocolos estándar, sin formatos propietarios
+
+Ver también: [[productos]], [[servicios-ia]]
