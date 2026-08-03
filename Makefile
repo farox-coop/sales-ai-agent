@@ -156,9 +156,10 @@ ssl-init: validate-env
 	@echo "=== Requesting Let's Encrypt certificate ==="
 	@. prod/.env && \
 		docker compose -f prod/nginx/docker-compose.nginx.yml run --rm \
+			--entrypoint certbot \
 			-e DOMAIN=$$DOMAIN \
 			certbot \
-			certbot certonly --webroot \
+			certonly --webroot \
 				--webroot-path=/var/www/certbot \
 				--email $$SSL_EMAIL \
 				--agree-tos \
