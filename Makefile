@@ -118,7 +118,7 @@ prod-deploy: validate-env
 
 nginx-config: validate-env
 	@echo "=== Rendering nginx configs ==="
-	@. prod/.env && \
+	@export $$(grep -v '^#' prod/.env | xargs) && \
 		for template in prod/nginx/conf.d/*.conf.template; do \
 			conf=$$(echo $$template | sed 's/.template$$//'); \
 			echo "  $$template -> $$conf"; \
@@ -128,7 +128,7 @@ nginx-config: validate-env
 nginx-config-http: validate-env
 	@echo "=== Rendering HTTP-only nginx config ==="
 	@rm -f prod/nginx/conf.d/ssl-app.conf
-	@. prod/.env && \
+	@export $$(grep -v '^#' prod/.env | xargs) && \
 		envsubst '$$DOMAIN' < prod/nginx/conf.d/default.conf.template > prod/nginx/conf.d/default.conf
 
 # --- Nginx stack ---
