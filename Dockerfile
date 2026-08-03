@@ -2,7 +2,9 @@ FROM python:3.12-slim
 WORKDIR /app
 
 # Instalar dependencias (lista plana, sin compilar el package)
-RUN pip install --no-cache-dir --upgrade pip && \
+RUN apt-get update && apt-get install -y --no-install-recommends curl && \
+    rm -rf /var/lib/apt/lists/* && \
+    pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir \
     chainlit>=2.0.0 \
     langgraph>=0.2.0 \
