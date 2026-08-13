@@ -4,6 +4,7 @@ enabled = false
 [UI]
 name = "Assistant"
 custom_css = "/public/custom.css"
+default_avatar_file_url = "/public/Assistant.svg"
 
 [meta]
 generated_by = "2.11.1"

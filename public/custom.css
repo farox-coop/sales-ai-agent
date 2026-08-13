@@ -1,3 +1,11 @@
 #chainlit-copilot-chat > :first-child {
   display: none;
 }
+
+.bg-primary {
+  background-color: #5BF175 !important;
+}
+
+.ai-message img {
+  content: url('/public/Assistant.svg');
+}
