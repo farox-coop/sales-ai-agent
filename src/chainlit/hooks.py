@@ -5,7 +5,7 @@ from src.db.queries import get_or_create_lead, save_interaction, close_lead, cou
 from src.db.session import async_session
 
 GREETING = (
-    "¡Hola! Soy el consultor de IA de GenIA. "
+    "¡Hola! Soy el consultor de GenIA. "
     "Contame un poco sobre vos y tu empresa, así entiendo mejor cómo puedo ayudarte."
 )
 
@@ -60,6 +60,7 @@ async def start():
 async def on_message(message: cl.Message):
     history = cl.user_session.get("history", [])
     lead_id = cl.user_session.get("lead_id")
+    session_id = cl.user_session.get("session_id")
 
     # 5G — Fast-path: si el mensaje es trivial Y la conversación no arrancó
     # realmente (solo está el saludo inicial), responder sin LLM.
@@ -119,6 +120,7 @@ async def on_message(message: cl.Message):
             history=history,
             db=db,
             lead_id=lead_id,
+            session_id=session_id,
             stream_callback=stream_token,
             tool_callback=tool_callback,
         )

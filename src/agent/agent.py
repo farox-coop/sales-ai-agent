@@ -9,6 +9,7 @@ El streaming es granular: tokens en vivo, notificaciones on_tool_start/on_tool_e
 from typing import Callable, Awaitable
 
 from langgraph.prebuilt import create_react_agent
+from langgraph.config import get_config
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_core.runnables import RunnableConfig
@@ -34,16 +35,38 @@ def _build_model() -> ChatOpenAI:
     )
 
 
+# Modelo base compartido (reusa el cliente HTTP / pool de conexiones).
+# Por request se bindea el `litellm_session_id` correspondiente (ver _resolve_model).
+_base_model = _build_model()
+
+
+def _resolve_model(state, runtime):
+    """Modelo dinámico: devuelve el modelo bindeado con tools + litellm_session_id.
+
+    create_react_agent soporta modelos dinámicos (una función (state, runtime)
+    que devuelve el modelo a usar en cada llamada). Leemos el session_id del
+    RunnableConfig (via get_config) y lo bindeamos como extra_body para que
+    LiteLLM agrupe todos los requests de la misma conversación en una única
+    sesión (Session Logs de LiteLLM).
+    """
+    session_id = get_config().get("configurable", {}).get("session_id")
+    if session_id:
+        return _base_model.bind_tools(
+            ALL_TOOLS,
+            extra_body={"litellm_session_id": session_id},
+        )
+    return _base_model.bind_tools(ALL_TOOLS)
+
+
 def build_agent():
-    """Crea el agente React con tools y modelo configurado.
+    """Crea el agente React con tools y modelo dinámico.
 
     Se llama una sola vez al iniciar la app (singleton). El agente compilado
     es seguro para reutilizar entre requests concurrentes — cada ejecución
     recibe su propio estado y config via RunnableConfig.
     """
-    model = _build_model()
     return create_react_agent(
-        model=model,
+        model=_resolve_model,
         tools=ALL_TOOLS,
         prompt=SystemMessage(content=SYSTEM_PROMPT),
     )
@@ -58,6 +81,7 @@ async def run_agent_streaming(
     history: list[dict],
     db,
     lead_id,
+    session_id,
     stream_callback: Callable[[str], Awaitable[None]],
     tool_callback: Callable[[str, str], Awaitable[None]],
 ) -> str:
@@ -74,6 +98,7 @@ async def run_agent_streaming(
         history: historial en formato {"role": ..., "content": ...}.
         db: AsyncSession de SQLAlchemy.
         lead_id: UUID del lead actual.
+        session_id: id de sesión (Chainlit) usado para agrupar los requests en LiteLLM.
         stream_callback: llamado con cada token de texto generado.
         tool_callback: llamado en on_tool_start / on_tool_end con (event_type, tool_name).
 
@@ -86,7 +111,9 @@ async def run_agent_streaming(
         HumanMessage(content=user_message),
     ]
 
-    config = RunnableConfig(configurable={"db": db, "lead_id": lead_id})
+    config = RunnableConfig(
+        configurable={"db": db, "lead_id": lead_id, "session_id": session_id}
+    )
 
     accumulated_content = ""
 
