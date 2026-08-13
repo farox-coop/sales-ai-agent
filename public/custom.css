@@ -1,0 +1,3 @@
+#chainlit-copilot-chat > :first-child {
+  display: none;
+}

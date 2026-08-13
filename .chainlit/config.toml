@@ -1,0 +1,9 @@
+[features.spontaneous_file_upload]
+enabled = false
+
+[UI]
+name = "Assistant"
+custom_css = "/public/custom.css"
+
+[meta]
+generated_by = "2.11.1"

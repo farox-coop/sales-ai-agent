@@ -23,6 +23,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl && \
 
 COPY src/ ./src/
 COPY data/ ./data/
+COPY .chainlit/ ./.chainlit/
+COPY public/ ./public/
 
 ENV PYTHONPATH=/app
 EXPOSE 8000

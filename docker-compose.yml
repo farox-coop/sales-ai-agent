@@ -9,6 +9,8 @@ services:
       - ./src:/app/src
       - ./scripts:/app/scripts
       - ./data:/app/data
+      - ./.chainlit:/app/.chainlit
+      - ./public:/app/public
     command: chainlit run src/main.py --host 0.0.0.0 --port 8000 --watch
     depends_on:
       postgres:
