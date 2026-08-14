@@ -79,7 +79,7 @@ agent = build_agent()
 async def run_agent_streaming(
     user_message: str,
     history: list[dict],
-    db,
+    session_factory,
     lead_id,
     session_id,
     stream_callback: Callable[[str], Awaitable[None]],
@@ -96,7 +96,9 @@ async def run_agent_streaming(
     Args:
         user_message: texto del usuario.
         history: historial en formato {"role": ..., "content": ...}.
-        db: AsyncSession de SQLAlchemy.
+        session_factory: async_sessionmaker de SQLAlchemy. Se inyecta en el config
+            para que cada tool abra su propia sesión (evita compartir una única
+            AsyncSession entre tools ejecutadas en paralelo por LangGraph).
         lead_id: UUID del lead actual.
         session_id: id de sesión (Chainlit) usado para agrupar los requests en LiteLLM.
         stream_callback: llamado con cada token de texto generado.
@@ -112,7 +114,11 @@ async def run_agent_streaming(
     ]
 
     config = RunnableConfig(
-        configurable={"db": db, "lead_id": lead_id, "session_id": session_id}
+        configurable={
+            "session_factory": session_factory,
+            "lead_id": lead_id,
+            "session_id": session_id,
+        }
     )
 
     accumulated_content = ""

@@ -7,7 +7,7 @@ Los schemas JSON para el LLM se infieren automáticamente de los type hints y do
 import uuid
 from langchain_core.tools import tool
 from langchain_core.runnables import RunnableConfig
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from src.db.queries import (
     update_lead,
@@ -21,11 +21,18 @@ from src.knowledge.loader import knowledge_base
 MAX_DIAGNOSTIC_QUESTIONS = 12
 
 
-def _get_context(config: RunnableConfig) -> tuple[AsyncSession, uuid.UUID]:
-    """Extrae db y lead_id del RunnableConfig inyectado en la ejecución del agente."""
-    db = config["configurable"]["db"]
+def _get_context(config: RunnableConfig) -> tuple[async_sessionmaker, uuid.UUID]:
+    """Extrae el session factory y lead_id del RunnableConfig inyectado en el agente.
+
+    Cada tool abre su propia AsyncSession a partir del factory en lugar de
+    compartir una única sesión entre tools que LangGraph ejecuta concurrentemente
+    (asyncio.gather en el ToolNode). Compartir una AsyncSession provoca:
+    'This session is provisioning a new connection; concurrent operations are
+    not permitted'.
+    """
+    session_factory = config["configurable"]["session_factory"]
     lead_id = config["configurable"]["lead_id"]
-    return db, lead_id
+    return session_factory, lead_id
 
 
 @tool
@@ -50,38 +57,39 @@ async def registrar_lead(
         empresa: Nombre de la empresa donde trabaja.
         cargo: Cargo o rol del lead en la empresa (ej. 'CTO', 'Gerente de Innovación').
     """
-    db, lead_id = _get_context(config)
+    session_factory, lead_id = _get_context(config)
 
-    lead = await db.get(Lead, lead_id)
-    if not lead:
-        return "Error: Lead no encontrado."
+    async with session_factory() as session:
+        lead = await session.get(Lead, lead_id)
+        if not lead:
+            return "Error: Lead no encontrado."
 
-    updates = {}
-    unchanged = []
-    for field in ("nombre", "email", "empresa", "cargo"):
-        value = locals().get(field)
-        if not value or not value.strip():
-            continue
-        value = value.strip()
+        updates = {}
+        unchanged = []
+        for field in ("nombre", "email", "empresa", "cargo"):
+            value = locals().get(field)
+            if not value or not value.strip():
+                continue
+            value = value.strip()
 
-        current = getattr(lead, field, None)
-        if current == value:
-            unchanged.append(field)
-        else:
-            updates[field] = value
+            current = getattr(lead, field, None)
+            if current == value:
+                unchanged.append(field)
+            else:
+                updates[field] = value
 
-    if not updates:
-        campos = ", ".join(unchanged) if unchanged else "ninguno"
-        return (
-            f"Sin datos nuevos para registrar. Los campos {campos} "
-            f"ya tenían el mismo valor en la base de datos."
-        )
+        if not updates:
+            campos = ", ".join(unchanged) if unchanged else "ninguno"
+            return (
+                f"Sin datos nuevos para registrar. Los campos {campos} "
+                f"ya tenían el mismo valor en la base de datos."
+            )
 
-    await update_lead(db, lead_id, **updates)
-    msg = f"Datos actualizados: {', '.join(updates.keys())}."
-    if unchanged:
-        msg += f" Sin cambios: {', '.join(unchanged)}."
-    return msg
+        await update_lead(session, lead_id, **updates)
+        msg = f"Datos actualizados: {', '.join(updates.keys())}."
+        if unchanged:
+            msg += f" Sin cambios: {', '.join(unchanged)}."
+        return msg
 
 
 @tool
@@ -92,8 +100,9 @@ async def contador_preguntas(config: RunnableConfig = None) -> str:
     Llamala para decidir si seguís explorando un dominio, si pasás a otro, o si
     vas cerrando. También para saber cuándo avisar al lead que quedan pocas preguntas.
     """
-    db, lead_id = _get_context(config)
-    count = await count_questions(db, lead_id)
+    session_factory, lead_id = _get_context(config)
+    async with session_factory() as session:
+        count = await count_questions(session, lead_id)
     remaining = max(0, MAX_DIAGNOSTIC_QUESTIONS - count)
     return (
         f"Preguntas hechas: {count}. "
@@ -173,26 +182,36 @@ async def generar_resumen(config: RunnableConfig = None) -> str:
     La tool devuelve datos para que generes el resumen y se lo muestres al lead junto
     con la despedida.
     """
-    db, lead_id = _get_context(config)
+    session_factory, lead_id = _get_context(config)
 
-    interacciones = await get_lead_interactions(db, lead_id)
-    total_mensajes = len(interacciones)
-    preguntas_count = sum(
-        1 for i in interacciones if i.rol == MessageRole.assistant
-    )
+    async with session_factory() as session:
+        interacciones = await get_lead_interactions(session, lead_id)
+        total_mensajes = len(interacciones)
+        preguntas_count = sum(
+            1 for i in interacciones if i.rol == MessageRole.assistant
+        )
 
-    lead = await db.get(Lead, lead_id)
+        lead = await session.get(Lead, lead_id)
 
-    await close_lead(db, lead_id, LeadStatus.completado)
+        await close_lead(session, lead_id, LeadStatus.completado)
+
+        resumen_data = {
+            "nombre": lead.nombre if lead else "N/A",
+            "empresa": lead.empresa if lead else "N/A",
+            "email": lead.email if lead else "N/A",
+            "cargo": lead.cargo if lead else "N/A",
+            "total_mensajes": total_mensajes,
+            "preguntas_count": preguntas_count,
+        }
 
     return (
         f"Lead completado. Datos para el resumen:\n"
-        f"- Nombre: {lead.nombre if lead else 'N/A'}\n"
-        f"- Empresa: {lead.empresa if lead else 'N/A'}\n"
-        f"- Email: {lead.email if lead else 'N/A'}\n"
-        f"- Cargo: {lead.cargo if lead else 'N/A'}\n"
-        f"- Total interacciones: {total_mensajes}\n"
-        f"- Preguntas de diagnóstico: {preguntas_count}\n"
+        f"- Nombre: {resumen_data['nombre']}\n"
+        f"- Empresa: {resumen_data['empresa']}\n"
+        f"- Email: {resumen_data['email']}\n"
+        f"- Cargo: {resumen_data['cargo']}\n"
+        f"- Total interacciones: {resumen_data['total_mensajes']}\n"
+        f"- Preguntas de diagnóstico: {resumen_data['preguntas_count']}\n"
         f"\nAHORA generá un resumen estructurado del diagnóstico basado en toda "
         f"la conversación. El resumen debe incluir: (1) Perfil de la empresa, "
         f"(2) Madurez de IA estimada, (3) Casos de uso identificados, "

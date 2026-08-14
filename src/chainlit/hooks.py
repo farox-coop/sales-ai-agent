@@ -1,12 +1,23 @@
+import logging
+
 import chainlit as cl
 from src.agent.agent import run_agent_streaming
 from src.db.models import MessageRole, LeadStatus
 from src.db.queries import get_or_create_lead, save_interaction, close_lead, count_questions
 from src.db.session import async_session
 
+logger = logging.getLogger(__name__)
+
 GREETING = (
     "¡Hola! Soy el consultor de GenIA. "
     "Contame un poco sobre vos y tu empresa, así entiendo mejor cómo puedo ayudarte."
+)
+
+# Mensaje de fallback cuando algo falla y no podemos generar una respuesta real.
+# Evita que el chat quede colgado sin responder.
+ERROR_MESSAGE = (
+    "Perdón, tuve un inconveniente técnico y no pude procesar tu mensaje. "
+    "Por favor intentá de nuevo en unos minutos."
 )
 
 # Mapeo de tool_name interno → texto amigable para mostrar en el chat.
@@ -69,14 +80,18 @@ async def on_message(message: cl.Message):
     normalized = message.content.strip().lower()
     conversation_started = len(history) > 1  # más que solo el greeting
     if normalized in TRIVIAL_RESPONSES and not conversation_started:
-        async with async_session() as db:
-            await save_interaction(db, lead_id, MessageRole.user, message.content)
-            pregunta_numero = await count_questions(db, lead_id) + 1
-            response = TRIVIAL_RESPONSES[normalized]
-            await save_interaction(
-                db, lead_id, MessageRole.assistant, response,
-                pregunta_numero=pregunta_numero,
-            )
+        try:
+            async with async_session() as db:
+                await save_interaction(db, lead_id, MessageRole.user, message.content)
+                pregunta_numero = await count_questions(db, lead_id) + 1
+                response = TRIVIAL_RESPONSES[normalized]
+                await save_interaction(
+                    db, lead_id, MessageRole.assistant, response,
+                    pregunta_numero=pregunta_numero,
+                )
+        except Exception:
+            logger.exception("Error en fast-path del lead %s", lead_id)
+            response = ERROR_MESSAGE
 
         history.append({"role": "user", "content": message.content})
         history.append({"role": "assistant", "content": response})
@@ -92,9 +107,12 @@ async def on_message(message: cl.Message):
     # 5D — Skeleton durante tool execution: si el LLM va directo a tools sin
     # generar texto, mostramos un placeholder para que el lead no vea pantalla en blanco.
     tool_placeholder_sent = False
+    streamed = False
 
     async def stream_token(token: str):
         """Callback: streamea cada token al frontend en vivo."""
+        nonlocal streamed
+        streamed = True
         await msg.stream_token(token)
 
     async def tool_callback(event_type: str, tool_name: str):
@@ -106,33 +124,48 @@ async def on_message(message: cl.Message):
                 tool_placeholder_sent = True
                 await msg.stream_token(f"{display}\n")
 
-    # Una sola sesión de DB para todo el turno
-    async with async_session() as db:
-        # Guardar mensaje del usuario
-        await save_interaction(db, lead_id, MessageRole.user, message.content)
+    # El mensaje del usuario entra al historial sí o sí (también si falla el agente).
+    history.append({"role": "user", "content": message.content})
 
-        # Agregar al historial para el LLM
-        history.append({"role": "user", "content": message.content})
+    response = None
+    try:
+        async with async_session() as db:
+            # Guardar mensaje del usuario
+            await save_interaction(db, lead_id, MessageRole.user, message.content)
 
-        # Respuesta del agente con streaming granular (LangGraph)
-        response = await run_agent_streaming(
-            user_message=message.content,
-            history=history,
-            db=db,
-            lead_id=lead_id,
-            session_id=session_id,
-            stream_callback=stream_token,
-            tool_callback=tool_callback,
-        )
+            # Respuesta del agente con streaming granular (LangGraph)
+            response = await run_agent_streaming(
+                user_message=message.content,
+                history=history,
+                session_factory=async_session,
+                lead_id=lead_id,
+                session_id=session_id,
+                stream_callback=stream_token,
+                tool_callback=tool_callback,
+            )
 
-        # Calcular número de pregunta
-        pregunta_numero = await count_questions(db, lead_id) + 1
+            # Calcular número de pregunta
+            pregunta_numero = await count_questions(db, lead_id) + 1
 
-        # Guardar respuesta final del asistente
-        await save_interaction(
-            db, lead_id, MessageRole.assistant, response,
-            pregunta_numero=pregunta_numero,
-        )
+            # Guardar respuesta final del asistente
+            await save_interaction(
+                db, lead_id, MessageRole.assistant, response,
+                pregunta_numero=pregunta_numero,
+            )
+    except Exception:
+        # Si algo falla, el chat no debe quedar colgado: mostramos un mensaje
+        # de error y lo persistimos (best-effort) para no perder el turno.
+        logger.exception("Error procesando el mensaje del lead %s", lead_id)
+        response = ERROR_MESSAGE
+
+        try:
+            async with async_session() as db:
+                await save_interaction(db, lead_id, MessageRole.assistant, response)
+        except Exception:
+            logger.exception("No se pudo persistir el mensaje de error del lead %s", lead_id)
+
+        separator = "\n\n" if streamed else ""
+        await msg.stream_token(f"{separator}{ERROR_MESSAGE}")
 
     # Agregar respuesta al historial para el próximo turno
     history.append({"role": "assistant", "content": response})
