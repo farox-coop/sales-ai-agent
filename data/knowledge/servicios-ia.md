@@ -17,7 +17,7 @@ Nos convertimos en tu socio estratégico con un enfoque que abarca el ciclo comp
 
 ### 1. Diagnóstico (AI Readiness)
 
-Evaluación de procesos, infraestructura y calidad de datos. Analizamos el punto de partida de tu organización para determinar el nivel de madurez en IA y las oportunidades de mayor impacto.
+Evaluación de procesos, infraestructura, datos, riesgos, restricciones y oportunidades. Analizamos el punto de partida de tu organización para determinar el nivel de madurez en IA y las oportunidades de mayor impacto.
 
 **Entregables:**
 - Mapa de procesos automatizables
@@ -40,17 +40,17 @@ Stack personalizado con bases de conocimiento propio. Diseñamos e implementamos
 Implementación de "Quick Wins" para generar confianza interna y demostrar valor antes de escalar la solución. Empezamos con proyectos acotados de alto impacto y visibilidad.
 
 **Entregables:**
-- Proyecto piloto funcional (4-8 semanas)
+- Proyecto piloto funcional
 - Métricas de impacto iniciales
 - Plan de escalado
 - Documentación y transferencia de conocimiento
 
 ### 4. Desarrollo y Automatización
 
-Creación de agentes autónomos y aplicativos a medida. Desarrollamos soluciones de IA que automatizan procesos complejos y generan valor medible.
+Creación de agentes y aplicativos a medida. Desarrollamos soluciones de IA que automatizan procesos complejos y generan valor medible.
 
 **Entregables:**
-- Agentes de IA autónomos
+- Agentes de IA para procesos específicos
 - Aplicaciones a medida
 - Automatización de flujos de trabajo
 - Integración con herramientas existentes
@@ -64,5 +64,9 @@ Actualización y optimización continua por arquitectos de IA que están en la f
 - Actualización de modelos y stack
 - Optimización de rendimiento
 - Capacitación y evolución del equipo interno
+
+## Servicio Complementario: Desarrollo a Medida
+
+Además de los servicios del ciclo de adopción, desarrollamos sistemas, sitios web y aplicaciones a medida para cubrir necesidades específicas: portales, tableros, integraciones con sistemas existentes y cualquier pieza que no encaje en las soluciones predefinidas. Ver [[desarrollo-custom]].
 
 Ver también: [[genbase]], [[inferencia]], [[proceso-de-trabajo]], [[casos-de-exito]], [[tecnologias]]

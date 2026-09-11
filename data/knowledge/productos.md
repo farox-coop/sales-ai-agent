@@ -1,52 +1,37 @@
 ---
 type: concept
-title: Productos de IA
-description: "Genway, la capa de gobierno de IA que da visibilidad total y control sobre cómo, quién y con qué modelos se trabaja en tu organización."
-tags: [productos, genway, gobierno, control, privacidad, ruteo]
+title: Productos y Soluciones
+description: "El ecosistema GenIA: InferencIA (arquitectura), Genway (gobierno), GenBase (conocimiento) y servicios complementarios de desarrollo y automatización."
+tags: [productos, genway, genbase, inferencia, desarrollo-custom]
 ---
 
-# Productos de IA
+# Productos y Soluciones
 
-## Genway — Centro de Mando de Adopción de IA
+GenIA es un ecosistema cooperativo de soluciones de código abierto para adoptar IA de manera soberana. Cada solución responde a una pregunta distinta:
 
-**Genway** es una capa de gobierno que se ubica entre tu organización y los modelos de IA, dándote visibilidad total y el poder de decidir cómo, quién y con qué modelos se trabaja.
+| Solución | Rol en el ecosistema | Pregunta que responde |
+| --- | --- | --- |
+| **InferencIA** | Arquitectura abierta de referencia para el stack. | ¿Sobre qué capas y con qué criterios operamos la IA? |
+| **Genway** | Capa de gobierno entre la organización y los modelos. | ¿Quién usa qué, con qué reglas, datos, presupuesto y trazabilidad? |
+| **GenBase** | Plataforma de conocimiento e IA para investigación. | ¿Cómo convertimos conocimiento y datos propios en capacidad de innovación? |
 
-### Capacidades Principales
+No todas las soluciones deben estar presentes en cada implementación: se combinan según las necesidades de cada organización.
 
-#### 1. Control Total del Uso y la Adopción
+## InferencIA
 
-Definí políticas de uso por equipo, área o persona. Asigná presupuestos y límites de consumo, gestioná permisos de acceso y visualizá en tiempo real quién usa qué modelo, cuánto y para qué. La adopción de IA deja de ser una caja negra y se convierte en una decisión gestionada.
+Arquitectura abierta para construir el stack de IA. Cada capa es auditable, reemplazable y propiedad de la organización. Detalle en [[inferencia]] y [[tecnologias]].
 
-#### 2. Control · Privacidad · Ruteo
+## Genway
 
-Gestioná equipos, apps y usuarios desde un único punto de control:
+Centro de mando de la adopción de IA: define reglas, protege información, enruta modelos y aporta trazabilidad. Detalle en [[genway]].
 
-- **Control**: políticas granulares de acceso y uso por equipo, área o persona.
-- **Privacidad**: cada interacción queda bajo tu control, sin retención de datos en manos de terceros, con enmascarado de información sensible y trazabilidad completa de cada solicitud y respuesta. Tus datos no salen de tu perímetro de confianza.
-- **Ruteo**: conectá cualquier proveedor o modelo a través de un único gateway. Migrá gradualmente hacia modelos libres y self-hosted sin reescribir tus aplicaciones ni atarte a un único vendor.
+## GenBase
 
-#### 3. Protección de Datos y Privacidad
+Plataforma de conocimiento e IA para organizaciones donde el conocimiento científico, técnico o regulatorio es un activo central. Detalle en [[genbase]].
 
-Cada interacción queda bajo tu control:
-- Sin retención de datos en manos de terceros
-- Enmascarado de información sensible
-- Trazabilidad completa de cada solicitud y respuesta
-- Tus datos no salen de tu perímetro de confianza
+## Servicios complementarios
 
-#### 4. Libertad para Elegir y Combinar Modelos
+- **Desarrollo a medida**: sistemas, sitios web y aplicaciones para necesidades específicas que no cubren las soluciones predefinidas. Ver [[desarrollo-custom]].
+- **Automatización de procesos**: agentes que llevan la IA a flujos de trabajo concretos, conectando fuentes y sistemas de la organización. Ver [[automatizacion-de-procesos]].
 
-Conectate a cualquier proveedor o modelo a través de un único gateway. Migrá gradualmente hacia modelos libres y self-hosted sin reescribir tus aplicaciones ni quedar atrapado en un único proveedor.
-
-#### 5. Capa de Seguridad para Cumplimiento Normativo
-
-Aplicá reglas de acceso, auditoría y retención pensadas para datos sensibles. Cumplí con normativas de protección de datos y políticas internas de seguridad sin frenar la innovación de tus equipos.
-
-### Propuesta de Valor
-
-- Unifica la adopción de IA en toda la organización
-- Elimina el "shadow AI" (uso no controlado de herramientas de IA)
-- Proporciona métricas y trazabilidad total
-- Facilita el cumplimiento normativo (protección de datos, regulaciones sectoriales)
-- Reduce costos al permitir migración gradual a modelos open-source
-
-Ver también: [[genbase]], [[genway]], [[inferencia]], [[tecnologias]], [[servicios-ia]]
+Ver también: [[genia]], [[servicios-ia]], [[proceso-de-trabajo]]

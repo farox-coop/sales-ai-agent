@@ -11,7 +11,9 @@ tags: [genia, identidad, mision, principios, cooperativismo]
 
 GenIA es una iniciativa de cooperativas de tecnología que trabajan de manera colaborativa para crear una tecnología más justa y soberana.
 
-Nace como una iniciativa de cooperativas de tecnología, con el objetivo de acompañar a organizaciones que buscan adoptar IA de manera controlada y segura.
+Nace como una iniciativa de las cooperativas **Farox**, **Nayra** y **Cambá**, con el objetivo de acompañar a organizaciones que buscan adoptar IA de manera controlada y segura.
+
+Nuestro lema: **IA soberana, construida por cooperativas.**
 
 ## Misión
 

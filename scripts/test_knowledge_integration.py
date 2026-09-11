@@ -63,11 +63,11 @@ def main():
         status = "✅" if has_meta else "❌"
         print(f"  {status} {a['slug']}: {a['title']} — tags: {a['tags']}")
 
-    all_passed = len(articles) == 7
+    all_passed = len(articles) == 12
     if all_passed:
-        print(f"\n  ✅ All 7 articles loaded with frontmatter")
+        print(f"\n  ✅ All 12 articles loaded with frontmatter")
     else:
-        print(f"\n  ❌ Expected 7 articles, got {len(articles)}")
+        print(f"\n  ❌ Expected 12 articles, got {len(articles)}")
     print()
 
     # Test 3: get_full_article returns content for each slug
@@ -75,8 +75,9 @@ def main():
     print("TEST 3 — get_full_article returns content for each slug")
     print("=" * 60)
     expected_slugs = [
-        "genia", "servicios-ia", "productos", "casos-de-exito",
-        "industrias", "tecnologias", "proceso-de-trabajo",
+        "automatizacion-de-procesos", "casos-de-exito", "desarrollo-custom",
+        "genbase", "genia", "genway", "industrias", "inferencia",
+        "proceso-de-trabajo", "productos", "servicios-ia", "tecnologias",
     ]
     for slug in expected_slugs:
         content = knowledge_base.get_full_article(slug)

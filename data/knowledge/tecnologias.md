@@ -1,7 +1,7 @@
 ---
 type: concept
 title: Stack Tecnológico
-description: "Arquitectura de IA 100% open-source y self-hosted: hardware, inferencia, modelos, orquestación, interfaz y observabilidad."
+description: "Arquitectura de IA 100% open-source y self-hosted en 7 capas más observabilidad transversal: hardware, inferencia, gestión, modelos, aplicativos, orquestación e interfaz."
 tags: [tecnologia, stack, open-source, self-hosted, hardware, modelos, inferencia]
 ---
 
@@ -11,58 +11,44 @@ tags: [tecnologia, stack, open-source, self-hosted, hardware, modelos, inferenci
 
 Construimos sobre estándares abiertos. Cada capa es auditable, reemplazable y de tu propiedad. Sin vendor lock-in. Sin cajas negras.
 
+El stack se organiza en siete capas, de la infraestructura física hasta la interfaz de usuario, con una capa transversal de observabilidad.
+
 ## Capas del Stack
 
-### 1. Infraestructura Física (Hardware)
-GPUs NVIDIA (H100/A100) o setups optimizados. Físico o cloud privado según tu caso.
+### 1. Hardware
+Diagnóstico y recomendación a medida. GPUs NVIDIA (H100/A100) o setups optimizados. Físico o cloud privado según tu caso.
 
-- **Opción on-premise**: servidores con GPUs en tus instalaciones
-- **Opción cloud privado**: infraestructura dedicada en datacenters de tu elección
-- Sin dependencia de clouds públicos ni proveedores externos
+### 2. Motor de Inferencia
+Ejecución eficiente de modelos sobre CPU y/o GPU. `llama.cpp`, optimizado para máximo rendimiento en hardware propio.
 
-### 2. Inferencia
-Inferencia optimizada para máximo rendimiento en CPU y GPU propias.
+### 3. Gestión de Modelos
+Administración eficiente de los pesos de los modelos, con actualización y control local. `Ollama`.
 
-- Motores de inferencia open-source (llama.cpp, vLLM, TGI)
-- Optimización para hardware propio
-- Sin llamadas a APIs externas que cobran por token
+### 4. Modelos
+El "motor" de razonamiento: LLMs de clase mundial, abiertos y auditables. Sin cajas negras. Modelos open-source como Llama 3.1, DeepSeek, Mistral, Phi-3, Qwen y Gemma, entre otros evaluables.
 
-### 3. Modelos (Model Weights)
-Administración eficiente de los pesos de los modelos. Actualización y control local.
+### 5. Aplicativos
+IA integrada en el navegador, dispositivos móviles y entornos de desarrollo. Page Assist, M.A.I.D (mobile) y OpenCode.
 
-- LLMs de clase mundial, abiertos y auditables. Sin cajas negras.
-- Modelos open-source: Llama, Mistral, Qwen, DeepSeek y otros
-- Control de versiones local de los modelos
-- Actualización controlada sin dependencia externa
+### 6. Orquestación
+Gestión de agentes y flujos de trabajo complejos. Automatización sin código. `Langflow` y `MCP`.
 
-### 4. Orquestación
-El "motor" de razonamiento: flujos de trabajo complejos y automatización sin código.
+### 7. Interfaz
+Acceso amigable, chat y herramientas RAG para toda la organización. `OpenWebUI`.
 
-- Gestión de agentes y flujos de trabajo complejos
-- Automatización sin código
-- RAG (Retrieval-Augmented Generation) con bases de conocimiento propias
+### Observabilidad (capa transversal)
+Trazabilidad total de cada respuesta. Auditá, medí y optimizá el uso de IA con datos reales. `LangFuse`.
 
-### 5. Interfaz (Client Layer)
-IA integrada en el navegador, dispositivos móviles y entornos de desarrollo.
+## Despliegue
 
-- Acceso amigable, chat y herramientas RAG para toda la organización
-- Aplicaciones web y mobile
-- Integración en entornos de desarrollo
-
-### 6. Observabilidad (Capa Transversal)
-Trazabilidad total de cada respuesta. Auditá, medí y optimizá el uso de IA con datos reales.
-
-- **Diagnóstico y recomendación a medida**: análisis continuo de uso y rendimiento
-- Monitoreo de todas las capas del stack
-- Métricas de uso, costos y rendimiento
-- Auditoría completa de interacciones
+Todo el stack corre en infraestructura propia de la organización (on-premise o cloud privado). Como alternativa, puede montarse una solución integrada para operar IA privada **dentro de la organización**, cerca de la operación, cuando los datos no deben salir del perímetro de confianza.
 
 ## Principios Tecnológicos
 
-- **100% Open Source**: todo el stack usa tecnología de código abierto
-- **Self-hosted**: todo corre en infraestructura propia del cliente
-- **Auditable**: cada componente puede ser inspeccionado y verificado
-- **Reemplazable**: ninguna capa genera vendor lock-in
-- **Estándares abiertos**: APIs y protocolos estándar, sin formatos propietarios
+- **100% Open Source**: todo el stack usa tecnología de código abierto.
+- **Self-hosted**: todo corre en infraestructura propia del cliente.
+- **Auditable**: cada componente puede ser inspeccionado y verificado.
+- **Reemplazable**: ninguna capa genera vendor lock-in.
+- **Estándares abiertos**: APIs y protocolos estándar, sin formatos propietarios.
 
-Ver también: [[genbase]], [[inferencia]], [[productos]], [[servicios-ia]]
+Ver también: [[inferencia]], [[genbase]], [[productos]], [[servicios-ia]], [[automatizacion-de-procesos]]

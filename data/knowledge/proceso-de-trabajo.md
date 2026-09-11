@@ -1,8 +1,8 @@
 ---
 type: concept
 title: Proceso de Trabajo y Metodología
-description: "Metodología de 5 fases para adopción de IA: diagnóstico, implementación, piloto, desarrollo y acompañamiento continuo, con métricas de ROI."
-tags: [proceso, metodologia, fases, diagnostico, implementacion, roi]
+description: "Metodología de 5 fases para adopción de IA: diagnóstico, implementación, piloto controlado, desarrollo y acompañamiento continuo."
+tags: [proceso, metodologia, fases, diagnostico, implementacion, acompanamiento]
 ---
 
 # Proceso de Trabajo y Metodología
@@ -11,17 +11,15 @@ tags: [proceso, metodologia, fases, diagnostico, implementacion, roi]
 
 Trabajamos con un enfoque de 5 fases que abarca el ciclo completo de adopción de IA: desde el diagnóstico inicial hasta el acompañamiento continuo en producción.
 
-### Fase 1 — Diagnóstico (AI Readiness)
+### Fase 1 — Diagnóstico
 
-**Evaluación de procesos, infraestructura y calidad de datos.**
+**Evaluación de procesos, infraestructura, datos, riesgos, restricciones y oportunidades.**
 
 Analizamos el punto de partida:
 - Mapeo de procesos actuales y oportunidades de automatización
 - Evaluación de infraestructura tecnológica existente
 - Análisis de calidad, disponibilidad y gobernanza de datos
 - Identificación de "quick wins" y proyectos de alto impacto
-
-**Duración típica:** 2-4 semanas
 
 ### Fase 2 — Implementación
 
@@ -33,29 +31,23 @@ Diseñamos y desplegamos la infraestructura:
 - Base de conocimiento propia con RAG
 - Integración con sistemas y fuentes de datos existentes
 
-**Duración típica:** 4-8 semanas
-
 ### Fase 3 — Piloto Controlado
 
 **Implementación de "Quick Wins" para generar confianza interna y demostrar valor antes de escalar la solución.**
 
 - Proyecto acotado de alto impacto y visibilidad
-- Métricas claras de éxito y ROI
+- Métricas claras de éxito
 - Validación con usuarios reales
 - Plan de escalado basado en resultados
 
-**Duración típica:** 4-6 semanas
-
 ### Fase 4 — Desarrollo y Automatización
 
-**Creación de agentes autónomos y aplicativos a medida.**
+**Creación de agentes y aplicativos a medida.**
 
 - Desarrollo de agentes de IA para procesos específicos
 - Aplicaciones a medida sobre el stack implementado
 - Automatización de flujos de trabajo complejos
 - Capacitación del equipo interno
-
-**Duración:** continua, por sprints iterativos
 
 ### Fase 5 — Acompañamiento Continuo
 
@@ -65,9 +57,12 @@ Diseñamos y desplegamos la infraestructura:
 - Actualización de modelos y herramientas
 - Optimización de rendimiento y costos
 - Transferencia de conocimiento al equipo interno
-- Nuevos proyectos sobre la plataforma establecida
 
-**Duración:** partnership continuo
+## Capacitación
+
+La implementación puede complementarse con capacitaciones internas sobre uso responsable y seguro de IA: buenas prácticas, prevención de riesgos, políticas de uso y tratamiento seguro de información estratégica y datos personales.
+
+El resultado buscado es que el conocimiento y la experiencia construidos en el proceso **permanezcan dentro de la organización**.
 
 ## Primer Contacto — Sin Compromiso
 
@@ -76,19 +71,22 @@ Evaluamos juntos tus procesos, infraestructura y necesidades. Construimos el roa
 ### Qué incluye:
 1. Diagnóstico de AI Readiness
 2. Propuesta de stack personalizado para tu infraestructura
-3. Estimación real de ROI y tiempo de break-even
+3. Estimación de ROI y tiempo de break-even
 4. Arquitectos de IA de frontera como socios estratégicos
 
 **Sin compromiso. Sin letra chica.**
 
-## ROI — Retorno de Inversión
+## Retorno de Inversión
 
-Una estrategia propia de IA **no es un gasto, es un activo financiero**. La IA soberana genera retornos concretos y medibles desde los primeros meses.
+El valor de una estrategia propia de IA se evalúa con resultados observables y medibles, no sólo por la adopción de herramientas. Según el caso, los criterios pueden incluir:
 
-### Métricas Clave
+- Reducción de tiempos de procesamiento y tareas repetitivas
+- Control de costos de inferencia y consumo
+- Disminución de la exposición de información sensible
+- Cumplimiento de políticas de acceso, auditoría y retención
+- Calidad, trazabilidad y pertinencia de las respuestas basadas en conocimiento propio
+- Autonomía de los equipos para operar y evolucionar la solución
 
-- **Menos Costos Operativos**: los proyectos de automatización suelen alcanzar el punto de equilibrio (break-even) en **menos de 6 meses**. Cada proceso automatizado libera tiempo y reduce costos fijos de forma permanente.
-- **Ahorro en Inferencia**: una vez amortizado el hardware, el **costo marginal por consulta es efectivamente cero**. Sin suscripciones mensuales por usuario ni costos por token que escalen con el uso.
-- **Eficiencia y Productividad**: latencia reducida, sin dependencias externas y disponibilidad continua para procesos críticos. Automatizá con mayor velocidad, estabilidad y control sin trasladar eficiencia a terceros. Uptime bajo tu control.
+Las proyecciones de ahorro (por ejemplo, el tiempo de break-even o el costo marginal por consulta) dependen de cada caso —escala, carga de uso, hardware, energía e integración— y se validan durante el diagnóstico. No son resultados garantizados, sino hipótesis a calcular para cada organización.
 
-Ver también: [[servicios-ia]], [[casos-de-exito]]
+Ver también: [[servicios-ia]], [[casos-de-exito]], [[automatizacion-de-procesos]]
