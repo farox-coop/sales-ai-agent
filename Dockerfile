@@ -25,6 +25,7 @@ COPY src/ ./src/
 COPY data/ ./data/
 COPY .chainlit/ ./.chainlit/
 COPY public/ ./public/
+COPY scripts/ ./scripts/
 
 ENV PYTHONPATH=/app
 EXPOSE 8000

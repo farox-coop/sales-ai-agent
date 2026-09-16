@@ -1,5 +1,5 @@
-.PHONY: dev build down shell db-shell db-reset scrape-genia knowledge-reload
-.PHONY: validate-env prod-build prod-up prod-down prod-restart prod-logs prod-status prod-setup prod-deploy
+.PHONY: dev build down shell db-shell db-reset scrape-genia knowledge-reload listar-solicitudes
+.PHONY: validate-env prod-build prod-up prod-down prod-restart prod-logs prod-listar-solicitudes prod-status prod-setup prod-deploy
 .PHONY: nginx-config nginx-config-http nginx-up nginx-down nginx-restart nginx-logs ssl-init
 
 # --- Dev compose ---
@@ -41,6 +41,9 @@ scrape-genia:
 knowledge-reload:
 	$(COMPOSE_DEV) exec app python3 -c "from src.knowledge.loader import knowledge_base; print(f'Loaded {knowledge_base.total_articles} articles, {knowledge_base.total_chars} chars')"
 
+listar-solicitudes:
+	$(COMPOSE_DEV) run --rm app python3 scripts/listar_solicitudes.py
+
 # =============================================================================
 # Production targets
 # =============================================================================
@@ -69,6 +72,9 @@ prod-restart:
 
 prod-logs:
 	$(COMPOSE_PROD) logs -f --tail=100 $(SERVICE)
+
+prod-listar-solicitudes:
+	$(COMPOSE_PROD) exec app python3 scripts/listar_solicitudes.py
 
 prod-status:
 	@echo "=== Docker network ==="
