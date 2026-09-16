@@ -9,8 +9,8 @@ from src.db.session import async_session
 logger = logging.getLogger(__name__)
 
 GREETING = (
-    "¡Hola! Soy el consultor de GenIA. "
-    "Contame un poco sobre vos y tu empresa, así entiendo mejor cómo puedo ayudarte."
+    "¡Hola! Soy el asistente de GenIA. "
+    "¿En qué te puedo ayudar?"
 )
 
 # Mensaje de fallback cuando algo falla y no podemos generar una respuesta real.
@@ -25,6 +25,7 @@ ERROR_MESSAGE = (
 # Si el valor es None o string vacío, tampoco se muestra nada.
 TOOL_DISPLAY_TEXT: dict[str, str | None] = {
     "registrar_lead": "Tomando nota...",
+    "solicitar_contacto": "Registrando tu solicitud...",
     "listar_articulos": "Consultando información...",
     "leer_articulo": "Consultando información...",
     "buscar_cv": "Buscando perfiles...",

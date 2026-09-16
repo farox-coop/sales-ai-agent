@@ -12,6 +12,7 @@ class Base(DeclarativeBase):
 
 class LeadStatus(str, enum.Enum):
     activo = "activo"
+    contacto_solicitado = "contacto_solicitado"
     completado = "completado"
     abandonado = "abandonado"
 

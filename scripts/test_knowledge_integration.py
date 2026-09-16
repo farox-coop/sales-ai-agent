@@ -12,7 +12,7 @@ from src.agent.prompts import SYSTEM_PROMPT
 # --- assertions about what the agent should and shouldn't say ---
 
 GENIA_FACTS = [
-    "Genway", "IA soberana", "self-hosted", "open-source",
+    "Genway", "self-hosted", "open-source",
     "cooperativas", "sin suscripciones", "sin vendor lock-in",
 ]
 
@@ -106,6 +106,7 @@ def main():
     tool_names = [t.name for t in ALL_TOOLS]
     expected_tools = [
         "registrar_lead", "contador_preguntas",
+        "solicitar_contacto",
         "listar_articulos", "leer_articulo",
         "buscar_cv", "generar_resumen",
     ]

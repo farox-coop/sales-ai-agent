@@ -93,6 +93,64 @@ async def registrar_lead(
 
 
 @tool
+async def solicitar_contacto(
+    email: str,
+    nombre: str = "",
+    empresa: str = "",
+    tipo_solicitud: str = "contacto",
+    config: RunnableConfig = None,
+) -> str:
+    """Registra una solicitud comercial explícita y cambia el estado del lead a
+    contacto_solicitado.
+
+    Usala sólo cuando la persona pidió que GenIA la contacte, una propuesta,
+    presupuesto, diagnóstico, evaluación o un resumen por email. El email es
+    obligatorio. Para una solicitud general, nombre y empresa son opcionales.
+    Para una propuesta o diagnóstico formal, el agente debe pedir nombre, empresa
+    y email antes de llamar esta tool.
+
+    Args:
+        email: Email de contacto. Obligatorio.
+        nombre: Nombre de la persona, recomendado.
+        empresa: Empresa u organización, recomendado.
+        tipo_solicitud: contacto, propuesta, presupuesto, diagnostico o resumen.
+    """
+    session_factory, lead_id = _get_context(config)
+    email = email.strip()
+    if not email:
+        return "No se puede registrar la solicitud sin email."
+
+    async with session_factory() as session:
+        lead = await session.get(Lead, lead_id)
+        if not lead:
+            return "Error: Lead no encontrado."
+
+        updates = {
+            "email": email,
+            "estado": LeadStatus.contacto_solicitado,
+        }
+        if nombre.strip():
+            updates["nombre"] = nombre.strip()
+        if empresa.strip():
+            updates["empresa"] = empresa.strip()
+
+        solicitud = tipo_solicitud.strip() or "contacto"
+        extra_data = dict(lead.extra_data or {})
+        extra_data["ultima_solicitud"] = {
+            "tipo": solicitud,
+            "registrada_en": "chat",
+        }
+        updates["extra_data"] = extra_data
+
+        await update_lead(session, lead_id, **updates)
+
+    return (
+        f"Solicitud de {solicitud} registrada. "
+        "El equipo de GenIA tiene los datos para dar seguimiento."
+    )
+
+
+@tool
 async def contador_preguntas(config: RunnableConfig = None) -> str:
     """Devuelve cuántas preguntas de diagnóstico se hicieron hasta ahora y cuántas
     quedan disponibles (el máximo es 12).
@@ -221,6 +279,7 @@ async def generar_resumen(config: RunnableConfig = None) -> str:
 
 ALL_TOOLS = [
     registrar_lead,
+    solicitar_contacto,
     contador_preguntas,
     listar_articulos,
     leer_articulo,
