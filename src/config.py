@@ -11,7 +11,7 @@ class Settings(BaseSettings):
 
     # Database
     sqlalchemy_async_url: str = "postgresql+asyncpg://postgres:postgres@postgres:5432/lead_magnet"
-    database_sync_url: str = "postgresql://postgres:postgres@postgres:5432/lead_magnet"
+    database_sync_url: str = "postgresql+psycopg2://postgres:postgres@postgres:5432/lead_magnet"
 
     # Chainlit
     chainlit_port: int = 8000
