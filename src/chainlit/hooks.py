@@ -2,6 +2,7 @@ import logging
 
 import chainlit as cl
 from src.agent.agent import run_agent_streaming
+from src.config import settings
 from src.db.models import MessageRole, LeadStatus
 from src.db.queries import get_or_create_lead, save_interaction, close_lead, count_questions
 from src.db.session import async_session
@@ -50,6 +51,11 @@ TRIVIAL_RESPONSES: dict[str, str] = {
 
 @cl.on_chat_start
 async def start():
+    # Modo mantenimiento: rechazar el inicio de la conversación.
+    if settings.maintenance_mode:
+        await cl.Message(content=settings.maintenance_message).send()
+        return
+
     # Crear o recuperar lead en DB
     session_id = cl.user_session.get("id") or cl.context.session.id
     cl.user_session.set("session_id", session_id)
@@ -70,6 +76,11 @@ async def start():
 
 @cl.on_message
 async def on_message(message: cl.Message):
+    # Modo mantenimiento: cortar también sesiones ya abiertas.
+    if settings.maintenance_mode:
+        await cl.Message(content=settings.maintenance_message).send()
+        return
+
     history = cl.user_session.get("history", [])
     lead_id = cl.user_session.get("lead_id")
     session_id = cl.user_session.get("session_id")

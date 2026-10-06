@@ -1,5 +1,7 @@
 .PHONY: dev build down shell db-shell db-reset scrape-genia knowledge-reload listar-solicitudes
+.PHONY: maintenance-on maintenance-off maintenance-status
 .PHONY: validate-env prod-build prod-up prod-down prod-restart prod-logs prod-listar-solicitudes prod-status prod-setup prod-deploy
+.PHONY: prod-maintenance-on prod-maintenance-off prod-maintenance-status
 .PHONY: nginx-config nginx-config-http nginx-up nginx-down nginx-restart nginx-logs ssl-init
 
 # --- Dev compose ---
@@ -45,6 +47,31 @@ listar-solicitudes:
 	$(COMPOSE_DEV) run --rm app python3 scripts/listar_solicitudes.py
 
 # =============================================================================
+# Modo mantenimiento (dev): setea MAINTENANCE_MODE y recrea la app
+# =============================================================================
+
+maintenance-on:
+	@if grep -q '^MAINTENANCE_MODE=' .env; then \
+		sed -i 's/^MAINTENANCE_MODE=.*/MAINTENANCE_MODE=true/' .env; \
+	else \
+		echo 'MAINTENANCE_MODE=true' >> .env; \
+	fi
+	@echo "Mantenimiento ACTIVADO (.env). Recreando app..."
+	$(COMPOSE_DEV) up -d --force-recreate app
+
+maintenance-off:
+	@if grep -q '^MAINTENANCE_MODE=' .env; then \
+		sed -i 's/^MAINTENANCE_MODE=.*/MAINTENANCE_MODE=false/' .env; \
+	else \
+		echo 'MAINTENANCE_MODE=false' >> .env; \
+	fi
+	@echo "Mantenimiento DESACTIVADO (.env). Recreando app..."
+	$(COMPOSE_DEV) up -d --force-recreate app
+
+maintenance-status:
+	@grep '^MAINTENANCE_MODE=' .env || echo "MAINTENANCE_MODE no seteado (default: false)"
+
+# =============================================================================
 # Production targets
 # =============================================================================
 
@@ -75,6 +102,29 @@ prod-logs:
 
 prod-listar-solicitudes:
 	$(COMPOSE_PROD) exec app python3 scripts/listar_solicitudes.py
+
+# --- Modo mantenimiento (prod) ---
+
+prod-maintenance-on: validate-env
+	@if grep -q '^MAINTENANCE_MODE=' prod/.env; then \
+		sed -i 's/^MAINTENANCE_MODE=.*/MAINTENANCE_MODE=true/' prod/.env; \
+	else \
+		echo 'MAINTENANCE_MODE=true' >> prod/.env; \
+	fi
+	@echo "Mantenimiento ACTIVADO (prod/.env). Recreando app..."
+	$(COMPOSE_PROD) up -d --force-recreate --wait app
+
+prod-maintenance-off: validate-env
+	@if grep -q '^MAINTENANCE_MODE=' prod/.env; then \
+		sed -i 's/^MAINTENANCE_MODE=.*/MAINTENANCE_MODE=false/' prod/.env; \
+	else \
+		echo 'MAINTENANCE_MODE=false' >> prod/.env; \
+	fi
+	@echo "Mantenimiento DESACTIVADO (prod/.env). Recreando app..."
+	$(COMPOSE_PROD) up -d --force-recreate --wait app
+
+prod-maintenance-status:
+	@grep '^MAINTENANCE_MODE=' prod/.env || echo "MAINTENANCE_MODE no seteado (default: false)"
 
 prod-status:
 	@echo "=== Docker network ==="

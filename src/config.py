@@ -16,6 +16,13 @@ class Settings(BaseSettings):
     # Chainlit
     chainlit_port: int = 8000
 
+    # Modo mantenimiento: si está activo, el chat rechaza toda interacción.
+    maintenance_mode: bool = False
+    maintenance_message: str = (
+        "El servicio está en mantenimiento. "
+        "Volvé a intentar en unos minutos, gracias."
+    )
+
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 
 
