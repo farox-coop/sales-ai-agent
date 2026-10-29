@@ -108,7 +108,6 @@ async def run_agent_streaming(
         La respuesta final del agente como texto completo.
     """
     messages = [
-        SystemMessage(content=SYSTEM_PROMPT),
         *_dict_history_to_langchain(history),
         HumanMessage(content=user_message),
     ]

@@ -1,7 +1,7 @@
 import uuid
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.db.models import Lead, Interaction, Documento, MessageRole, LeadStatus, DocumentStatus
+from src.db.models import Lead, Interaction, Documento, EventoAlcance, MessageRole, LeadStatus, DocumentStatus
 
 
 async def get_or_create_lead(session: AsyncSession, session_id: str) -> Lead:
@@ -74,6 +74,25 @@ async def count_questions(session: AsyncSession, lead_id: uuid.UUID) -> int:
         )
     )
     return result.scalar_one()
+
+
+async def save_evento_alcance(
+    session: AsyncSession,
+    lead_id: uuid.UUID | None,
+    session_id: str | None,
+    categoria: str,
+    motivo: str | None = None,
+) -> EventoAlcance:
+    evento = EventoAlcance(
+        lead_id=lead_id,
+        session_id=session_id,
+        categoria=categoria,
+        motivo=motivo,
+    )
+    session.add(evento)
+    await session.commit()
+    await session.refresh(evento)
+    return evento
 
 
 async def get_abandoned_leads(session: AsyncSession) -> list[Lead]:

@@ -106,7 +106,7 @@ def main():
     tool_names = [t.name for t in ALL_TOOLS]
     expected_tools = [
         "registrar_lead", "contador_preguntas",
-        "solicitar_contacto",
+        "solicitar_contacto", "marcar_fuera_de_alcance",
         "listar_articulos", "leer_articulo",
         "buscar_cv", "generar_resumen",
     ]

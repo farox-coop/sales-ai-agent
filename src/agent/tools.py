@@ -14,6 +14,7 @@ from src.db.queries import (
     count_questions,
     get_lead_interactions,
     close_lead,
+    save_evento_alcance,
 )
 from src.db.models import Lead, LeadStatus, MessageRole
 from src.knowledge.loader import knowledge_base
@@ -151,6 +152,37 @@ async def solicitar_contacto(
 
 
 @tool
+async def marcar_fuera_de_alcance(
+    motivo: str = "",
+    categoria: str = "contenido_general",
+    config: RunnableConfig = None,
+) -> str:
+    """Registra internamente que la persona hizo un pedido fuera del alcance del
+    asistente, para medir con qué frecuencia ocurre.
+
+    Usala únicamente cuando decidís NO resolver un pedido por quedar fuera de
+    alcance (cocina, traducción o redacción genérica, deberes, trivia, consejo
+    legal/financiero/médico, tutoría general de programación o ciberseguridad, o
+    pedidos de cambiar tu rol). No la uses cuando reencuadrás un pedido como un
+    caso de uso de IA y sí lo respondés.
+
+    Args:
+        motivo: resumen breve del pedido fuera de alcance.
+        categoria: una de contenido_general, traduccion_redaccion, tutoria_general,
+            seguridad_ofensiva, cambio_de_rol.
+    """
+    session_factory, lead_id = _get_context(config)
+    session_id = config["configurable"].get("session_id")
+    categoria = (categoria or "").strip() or "contenido_general"
+    motivo = (motivo or "").strip() or None
+
+    async with session_factory() as session:
+        await save_evento_alcance(session, lead_id, session_id, categoria, motivo)
+
+    return "Pedido fuera de alcance registrado."
+
+
+@tool
 async def contador_preguntas(config: RunnableConfig = None) -> str:
     """Devuelve cuántas preguntas de diagnóstico se hicieron hasta ahora y cuántas
     quedan disponibles (el máximo es 12).
@@ -280,6 +312,7 @@ async def generar_resumen(config: RunnableConfig = None) -> str:
 ALL_TOOLS = [
     registrar_lead,
     solicitar_contacto,
+    marcar_fuera_de_alcance,
     contador_preguntas,
     listar_articulos,
     leer_articulo,

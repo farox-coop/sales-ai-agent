@@ -70,6 +70,17 @@ class Interaction(Base):
     lead: Mapped["Lead"] = relationship(back_populates="interacciones")
 
 
+class EventoAlcance(Base):
+    __tablename__ = "eventos_alcance"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    lead_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("leads.id"), nullable=True)
+    session_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    categoria: Mapped[str] = mapped_column(String(100), nullable=False)
+    motivo: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
 class Documento(Base):
     __tablename__ = "documentos"
 
