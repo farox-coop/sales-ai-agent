@@ -1,3 +1,4 @@
+from pydantic import field_validator
 from pydantic_settings import BaseSettings
 
 
@@ -22,6 +23,15 @@ class Settings(BaseSettings):
         "El servicio está en mantenimiento. "
         "Volvé a intentar en unos minutos, gracias."
     )
+
+    @field_validator("database_sync_url")
+    @classmethod
+    def _force_psycopg2_driver(cls, v: str) -> str:
+        # SQLAlchemy 2.1 usa psycopg v3 para "postgresql://", pero el proyecto
+        # instala psycopg2-binary. Forzamos el driver explícito.
+        if v.startswith("postgresql://"):
+            return v.replace("postgresql://", "postgresql+psycopg2://", 1)
+        return v
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 
